@@ -2,5 +2,5 @@
 Grupo 4
 Integrantres:
 Jordy Cevallos
-Ana Hulloa
-Brayan Miguitama
+Ana ulloa
+Bryan Miguitama
