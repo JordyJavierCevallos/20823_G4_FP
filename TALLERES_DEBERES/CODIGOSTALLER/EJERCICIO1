@@ -1,1 +1,10 @@
-
+Algoritmo determine
+	Definir z Como Real
+	Escribir "Escriba su edad"
+	leer z
+	Si z >= 18 Entonces
+		Escribir "Usted es mayor de edad"
+	sino 
+		Escribir "Usted es menor de edad"
+	FinSi
+FinAlgoritmo
