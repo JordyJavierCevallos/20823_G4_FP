@@ -1,0 +1,10 @@
+Algoritmo determine
+	Definir t Como Real
+	Escribir "Escribe un número entero para determinar si es par o impar"
+	leer t
+	Si t MOD 2 = 0 Entonces
+		Escribir "El número es PAR"
+	sino 
+		Escribir "El número es IMPAR"
+	FinSi
+FinAlgoritmo
