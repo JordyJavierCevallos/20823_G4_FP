@@ -1,0 +1,11 @@
+Algoritmo determine
+Repetir 
+	Definir x como entero
+	Escribir "Ingrese un número entero positivo:"
+	Leer x
+	Si x < 0 o x > 10 Entonces
+		Escribir "El número debe ser mayor que cero. Intente nuevamente."
+	FinSi
+Hasta Que x >= 0 o x <=10
+Escribir "Nota correcta"
+FinAlgoritmo
