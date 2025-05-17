@@ -1,11 +1,15 @@
-Algoritmo determine
-Repetir 
-	Definir x como entero
-	Escribir "Ingrese un número entero positivo:"
-	Leer x
-	Si x < 0 o x > 10 Entonces
-		Escribir "El número debe ser mayor que cero. Intente nuevamente."
-	FinSi
-Hasta Que x >= 0 o x <=10
-Escribir "Nota correcta"
+Algoritmo Notas
+		Definir X Como Real
+		
+		Repetir
+			Escribir "Ingrese una nota entre 0 y 10:"
+			Leer X
+			
+			Si X < 0 o X > 10 Entonces
+				Escribir "Error: la nota debe estar entre 0 y 10. Intente nuevamente."
+			FinSi
+		Hasta Que X >= 0 y X <= 10
+		
+		Escribir "Nota ingresada correctamente: ", X
+
 FinAlgoritmo
