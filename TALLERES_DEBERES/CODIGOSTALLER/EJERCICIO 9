@@ -1,0 +1,11 @@
+Algoritmo ValidarContrasena
+    Definir clave, ingreso como cadena
+    clave <- "1234"
+
+    Repetir
+        Escribir "Ingrese la contraseña:"
+        Leer ingreso
+    Hasta Que ingreso = clave
+
+    Escribir "Contraseña correcta"
+FinAlgoritmo
