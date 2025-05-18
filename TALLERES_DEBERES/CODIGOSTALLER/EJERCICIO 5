@@ -1,4 +1,4 @@
-Algoritmo secuencia
+Algoritmo DETERMINE
 	definir x Como Entero
 	leer x
 	si x > 0 entonces
