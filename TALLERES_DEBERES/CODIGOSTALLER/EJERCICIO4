@@ -1,0 +1,7 @@
+Algoritmo secuencia
+	i <- 1
+	Mientras i <= 5
+		Escribir "Número: ", i
+		i <- i + 1
+	FinMientras
+FinAlgoritmo
