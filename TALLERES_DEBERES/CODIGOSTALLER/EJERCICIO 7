@@ -1,0 +1,9 @@
+Algoritmo suma
+	Definir f como real
+	repetir 
+		leer f
+		si f>0
+		escribir "Error ingrese otro numero"
+		FinSi
+	Hasta Que f<0
+FinAlgoritmo
