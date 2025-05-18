@@ -1,0 +1,10 @@
+Algoritmo suma
+	i <- 1
+    x <- 0
+    Mientras i <= 10
+        x <- x + i
+        i <- i + 1
+		Escribir "Suma parcial al agregar ", i, ": ", x
+    FinMientras
+    Escribir "La suma de los 10 primeros números naturales es: ", x
+FinAlgoritmo
