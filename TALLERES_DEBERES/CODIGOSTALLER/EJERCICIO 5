@@ -1,0 +1,15 @@
+Algoritmo secuencia
+	definir x Como Entero
+	leer x
+	si x > 0 entonces
+		Escribir "El número",x " es positivo"
+		sino
+		si x = 0 entonces
+			escribir "El número", x "es cero"
+			sino
+				si x < 0 entonces 
+				Escribir " El número", x "es negativo"
+				FinSi
+			FinSi
+		FinSi
+FinAlgoritmo
