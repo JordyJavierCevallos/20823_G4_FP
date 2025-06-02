@@ -1,0 +1,27 @@
+Proceso OrdenarVectorMayorAMenor
+    Dimension v[10]
+    Definir i, j, aux Como Entero
+	
+    // Leer los 10 elementos del vector
+    Para i <- 1 Hasta 10
+        Escribir "Ingrese el valor en la posición ", i, ":"
+        Leer v[i]
+    FinPara
+	
+    // Ordenamiento de mayor a menor (tipo burbuja)
+    Para i <- 1 Hasta 9
+        Para j <- i + 1 Hasta 10
+            Si v[i] < v[j] Entonces
+                aux <- v[i]
+                v[i] <- v[j]
+                v[j] <- aux
+            FinSi
+        FinPara
+    FinPara
+	
+    // Mostrar el vector ordenado
+    Escribir "Vector ordenado de mayor a menor:"
+    Para i <- 1 Hasta 10
+        Escribir v[i]
+    FinPara
+FinProceso
