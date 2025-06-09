@@ -8,11 +8,11 @@
 int main() {
     int N, i, j, k, aux;
 
-    // Solicita al usuario el tamaño de la matriz (N x N)
+    // Solicita al usuario el tamaÃ±o de la matriz (N x N)
     printf("Ingrese el tamano de la matriz N: ");
     scanf("%d", &N);
 
-    int mat[N][N];  // Declaración de la matriz cuadrada
+    int mat[N][N];  // DeclaraciÃ³n de la matriz cuadrada
 
     // Entrada de los elementos de la matriz
     for (i = 0; i < N; i++) {
@@ -28,23 +28,23 @@ int main() {
     printf("Ingrese la fila j: ");
     scanf("%d", &j);
 
-    i--;  // Ajuste del índice (de 1-based a 0-based)
+    i--;  // Ajuste del Ã­ndice (de 1-based a 0-based)
     j--;
 
     // Intercambio de las filas i y j
     for (k = 0; k < N; k++) {
-        aux = mat[i][k];      // Guarda temporalmente el valor de la posición [i][k]
+        aux = mat[i][k];      // Guarda temporalmente el valor de la posiciÃ³n [i][k]
         mat[i][k] = mat[j][k]; // Asigna el valor de la fila j a la fila i
         mat[j][k] = aux;       // Asigna el valor temporal a la fila j
     }
 
-    // Muestra la matriz resultante después del intercambio
+    // Muestra la matriz resultante despuÃ©s del intercambio
     printf("Matriz resultante:\n");
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
             printf("%d ", mat[i][j]);
         }
-        printf("\n");  // Salto de línea por fila
+        printf("\n");  // Salto de lÃ­nea por fila
     }
 
     return 0; // Fin del programa
