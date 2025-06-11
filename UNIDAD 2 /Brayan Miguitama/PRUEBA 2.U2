@@ -1,0 +1,39 @@
+//Este pograma en lenguaje c permite al usuario ingresar una matriz de valores enteros con f filas y c columnas.posteriormente, solicita al usuario que indique el numero de una fila especifica y muestra el valor maximo presente en dicha fila
+//requisitos funcionales:
+//1. El programa debe pedir al usuario ingresar una matriz de valores enteros con un numero definido de fila y columna
+//2. ingresar valores enteros para cada fila y columna.
+//3. el sistema debe solicitar al usuarion el numero de fila especifica
+//4.el programa debera mostrar o imprimir por pantalla "numero de las filas como valor maximo "
+
+#include <stdio.h>
+
+int main() {
+    int N, J;
+    printf("Ingrese el numero de filas (N): ");
+    scanf("%d", &N);
+    printf("Ingrese el numero de columnas (J): ");
+    scanf("%d", &J);
+
+    int matriz[N][J];
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < J; j++) {
+            scanf("%d", &matriz[i][j]);
+        }
+    }
+
+    int i;
+    printf("Ingrese el numero de la fila: ");
+    scanf("%d", &i);
+
+    int MAXIMO = matriz[i][0];
+    for (int j = 1; j < J; j++) {
+        if (matriz[i][j] > MAXIMO) {
+            MAXIMO = matriz[i][j];
+        }
+    }
+
+    printf("Fila %d como valor maximo: %d\n", i, MAXIMO);
+
+    return 0;
+}
