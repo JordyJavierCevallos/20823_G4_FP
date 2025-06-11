@@ -1,32 +1,46 @@
 #include <stdio.h>
 
 int main() {
-    int N, J;
-    printf("Ingrese el numero de filas (N): ");
-    scanf("%d", &N);
-    printf("Ingrese el numero de columnas (J): ");
-    scanf("%d", &J);
+    int f, c;
 
-    int matriz[N][J];
+    // 1. El programa debe pedir al usuario ingresar una matriz de valores enteros con un número definido de fila y columna
+    printf("Ingrese el numero de filas: ");
+    scanf("%d", &f);
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < J; j++) {
+    printf("Ingrese el numero de columnas: ");
+    scanf("%d", &c);
+
+    int matriz[f][c];
+
+    // 2. Ingresar valores enteros para cada fila y columna.
+    printf("Ingrese los valores de la matriz:\n");
+    for (int i = 0; i < f; i++) {
+        for (int j = 0; j < c; j++) {
+            printf("Elemento [%d][%d]: ", i, j);
             scanf("%d", &matriz[i][j]);
         }
     }
 
-    int i;
-    printf("Ingrese el numero de la fila: ");
-    scanf("%d", &i);
+    // 3. El sistema debe solicitar al usuario el numero de fila especifica
+    int fila_especifica;
+    printf("Ingrese el numero de la fila a verificar (0 a %d): ", f - 1);
+    scanf("%d", &fila_especifica);
 
-    int MAXIMO = matriz[i][0];
-    for (int j = 1; j < J; j++) {
-        if (matriz[i][j] > MAXIMO) {
-            MAXIMO = matriz[i][j];
+    // Validación básica (opcional)
+    if (fila_especifica < 0 || fila_especifica >= f) {
+        printf("Fila fuera de rango.\n");
+        return 1;
+    }
+
+    // 4. El programa deberá mostrar o imprimir por pantalla "numero de las filas como valor maximo"
+    int maximo = matriz[fila_especifica][0];
+    for (int j = 1; j < c; j++) {
+        if (matriz[fila_especifica][j] > maximo) {
+            maximo = matriz[fila_especifica][j];
         }
     }
 
-    printf("Fila %d como valor maximo: %d\n", i, MAXIMO);
+    printf("Fila %d como valor maximo: %d\n", fila_especifica, maximo);
 
     return 0;
 }
