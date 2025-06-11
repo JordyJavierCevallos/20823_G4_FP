@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+int main() {
+    // Declaración de variables
+    int i, j, f, c, filaSeleccionada, maximo;
+
+    // Solicita al usuario el número de filas
+    printf("Ingrese el número de filas: ");
+    scanf("%d", &f);
+
+    // Solicita al usuario el número de columnas
+    printf("Ingrese el número de columnas: ");
+    scanf("%d", &c);
+
+    // Declaración de la matriz
+    int matriz[f][c];
+
+    // Llenado de la matriz con valores ingresados por el usuario
+    for (i = 0; i < f; i++) {
+        for (j = 0; j < c; j++) {
+            printf("Ingrese el valor para la posición [%d][%d]: ", i, j);
+            scanf("%d", &matriz[i][j]);
+        }
+    }
+
+    // Solicita al usuario la fila que desea analizar
+    printf("Ingrese el número de la fila que desea analizar (0 a %d): ", f - 1);
+    scanf("%d", &filaSeleccionada);
+
+    // Inicializa el valor máximo con el primer elemento de la fila seleccionada
+    maximo = matriz[filaSeleccionada][0];
+
+    // Busca el valor máximo en la fila seleccionada
+    for (j = 1; j < c; j++) {
+        if (matriz[filaSeleccionada][j] > maximo) {
+            maximo = matriz[filaSeleccionada][j];
+        }
+    }
+
+    // Muestra el valor máximo encontrado
+    printf("El valor máximo en la fila %d es: %d\n", filaSeleccionada, maximo);
+
+    return 0;
+}
