@@ -1,46 +1,36 @@
 #include <stdio.h>
 
 int main() {
-    int f, c;
+    int i, j, f, c;
+    int filaSeleccionada, maximo;
 
-    // 1. El programa debe pedir al usuario ingresar una matriz de valores enteros con un número definido de fila y columna
-    printf("Ingrese el numero de filas: ");
+    printf("Ingrese el número de filas: ");
     scanf("%d", &f);
 
-    printf("Ingrese el numero de columnas: ");
+    printf("Ingrese el número de columnas: ");
     scanf("%d", &c);
 
     int matriz[f][c];
 
-    // 2. Ingresar valores enteros para cada fila y columna.
-    printf("Ingrese los valores de la matriz:\n");
-    for (int i = 0; i < f; i++) {
-        for (int j = 0; j < c; j++) {
-            printf("Elemento [%d][%d]: ", i, j);
+    for (i = 0; i < f; i++) {
+        for (j = 0; j < c; j++) {
+            printf("Ingrese el valor para la posición [%d][%d]: ", i, j);
             scanf("%d", &matriz[i][j]);
         }
     }
 
-    // 3. El sistema debe solicitar al usuario el numero de fila especifica
-    int fila_especifica;
-    printf("Ingrese el numero de la fila a verificar (0 a %d): ", f - 1);
-    scanf("%d", &fila_especifica);
+    printf("Ingrese el número de la fila que desea analizar (0 a %d): ", f - 1);
+    scanf("%d", &filaSeleccionada);
 
-    // Validación básica (opcional)
-    if (fila_especifica < 0 || fila_especifica >= f) {
-        printf("Fila fuera de rango.\n");
-        return 1;
-    }
+    maximo = matriz[filaSeleccionada][0];
 
-    // 4. El programa deberá mostrar o imprimir por pantalla "numero de las filas como valor maximo"
-    int maximo = matriz[fila_especifica][0];
-    for (int j = 1; j < c; j++) {
-        if (matriz[fila_especifica][j] > maximo) {
-            maximo = matriz[fila_especifica][j];
+    for (j = 1; j < c; j++) {
+        if (matriz[filaSeleccionada][j] > maximo) {
+            maximo = matriz[filaSeleccionada][j];
         }
     }
 
-    printf("Fila %d como valor maximo: %d\n", fila_especifica, maximo);
+    printf("El valor máximo en la fila %d es: %d\n", filaSeleccionada, maximo);
 
     return 0;
 }
