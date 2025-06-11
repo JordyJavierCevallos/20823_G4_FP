@@ -25,7 +25,7 @@ int main() {
     scanf("%d", &fila);
 
     // Verificar que la fila ingresada sea válida
-    if (fila < 0 || fila >= filas) {
+    if (fila < 0 && fila >= filas) {
         printf("Numero de fila invalido.\n");
         return 1;
     }
