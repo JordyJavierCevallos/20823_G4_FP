@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+int main() {
+    int N, i, j, k, aux;
+    int fila1, fila2, col1, col2;
+
+    // Pedir el tamaño de la matriz
+    printf("Ingrese el tamano de la matriz N: ");
+    scanf("%d", &N);
+
+    int mat[N][N];  // Crear matriz N x N
+
+    // Ingreso de elementos
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            printf("Elemento [%d][%d]: ", i, j);
+            scanf("%d", &mat[i][j]);
+        }
+    }
+
+    // Intercambiar filas
+    printf("\n--- Intercambio de filas ---\n");
+    printf("Ingrese el numero de la fila i (0 a %d): ", N - 1);
+    scanf("%d", &fila1);
+    printf("Ingrese el numero de la fila j (0 a %d): ", N - 1);
+    scanf("%d", &fila2);
+
+    if (fila1 >= 0 && fila1 < N && fila2 >= 0 && fila2 < N) {
+        for (k = 0; k < N; k++) {
+            aux = mat[fila1][k];
+            mat[fila1][k] = mat[fila2][k];
+            mat[fila2][k] = aux;
+        }
+    } else {
+        printf("Error: las filas están fuera del rango valido.\n");
+        return 1;
+    }
+
+    // Intercambiar columnas
+    printf("\n--- Intercambio de columnas ---\n");
+    printf("Ingrese el numero de la columna i (0 a %d): ", N - 1);
+    scanf("%d", &col1);
+    printf("Ingrese el numero de la columna j (0 a %d): ", N - 1);
+    scanf("%d", &col2);
+
+    if (col1 >= 0 && col1 < N && col2 >= 0 && col2 < N) {
+        for (k = 0; k < N; k++) {
+            aux = mat[k][col1];
+            mat[k][col1] = mat[k][col2];
+            mat[k][col2] = aux;
+        }
+    } else {
+        printf("Error: las columnas están fuera del rango valido.\n");
+        return 1;
+    }
+
+    // Mostrar matriz resultante
+    printf("\nMatriz resultante:\n");
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            printf("%d ", mat[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
