@@ -4,12 +4,12 @@ int main() {
     int vec[15], i, j;
     unsigned long long fact[15]; // Usamos unsigned long long para almacenar factoriales grandes
 
-    // Llenar el vector con los primeros 15 números naturales
+    // Llenar el vector con los primeros 15 nÃºmeros naturales
     for (i = 0; i < 15; i++) {
         vec[i] = i + 1;
     }
 
-    // Calcular el factorial de cada número
+    // Calcular el factorial de cada nÃºmero
     for (i = 0; i < 15; i++) {
         fact[i] = 1;
         for (j = 1; j <= vec[i]; j++) {
