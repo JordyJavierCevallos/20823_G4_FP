@@ -1,181 +1,157 @@
 /*
 UNIVERSIDAD DE LAS FUERZAS ARMADAS "ESPE"
-AUTORES: ANA U, BRAYAN M, JORDY C.
-GRUPO 4
-PROGRAMA PARA OPERAR MATRICES: suma (+), resta (-), producto (x) y potencia (matriz^n)
+INTEGRANTES: ANA U, BRAYAN M, JORDY C.
+EQUIPO 4
+CALCULADORA DE MATRICES (+, -, *, A^n)
 */
 
 #include <stdio.h>
 
-#define MAX 5  // Tamaño máximo permitido para las matrices (5x5)
+#define LIMITE 5  // Tamaño máximo permitido para las matrices
 
 int main() {
-    int dimension, opcion_menu;
-    int matrizX[MAX][MAX], matrizY[MAX][MAX], matrizRes[MAX][MAX];
-    int exponente;
+    int tam, eleccion;  // Tamaño de la matriz y opción del menú
+    int matA[LIMITE][LIMITE], matB[LIMITE][LIMITE], salida[LIMITE][LIMITE];  // Matrices de entrada y resultado
+    int exponente;  // Variable para guardar la potencia
 
-    // Función para ingresar elementos en una matriz
-    void ingresarMatriz(int matriz[MAX][MAX], int dimension, char id) {
-        printf("Digite los elementos de la matriz %c:\n", id);
-        for (int fila = 0; fila < dimension; fila++) {
-            for (int col = 0; col < dimension; col++) {
-                printf("%c[%d][%d]: ", id, fila, col);
-                scanf("%d", &matriz[fila][col]);
+    void ingresarMatriz(int matriz[LIMITE][LIMITE], int tam, char etiqueta) {  // Carga de datos de una matriz
+        printf("Introduzca los elementos de la matriz %c:\n", etiqueta);
+        for (int i = 0; i < tam; i++) {
+            for (int j = 0; j < tam; j++) {
+                printf("%c[%d][%d]: ", etiqueta, i, j);  // Entrada de valores
+                scanf("%d", &matriz[i][j]);
             }
         }
     }
 
-    // Función para mostrar una matriz con su identificador (X o Y)
-    void mostrarMatrizConID(int matriz[MAX][MAX], int dimension, char id) {
-        printf("Contenido de la matriz %c:\n", id);
-        for (int fila = 0; fila < dimension; fila++) {
-            printf("[");
-            for (int col = 0; col < dimension; col++) {
-                printf("%4d", matriz[fila][col]);
+    void mostrarMatrizConEtiqueta(int matriz[LIMITE][LIMITE], int tam, char etiqueta) {  // Muestra matriz con nombre
+        printf("Matriz %c:\n", etiqueta);
+        for (int i = 0; i < tam; i++) {
+            printf("(");
+            for (int j = 0; j < tam; j++) {
+                printf("%4d", matriz[i][j]);  // Imprime cada elemento
             }
-            printf(" ]\n");
+            printf(" )\n");
         }
     }
 
-    // Función para mostrar una matriz sin identificador
-    void mostrarMatrizSimple(int matriz[MAX][MAX], int dimension) {
-        for (int fila = 0; fila < dimension; fila++) {
-            printf("[");
-            for (int col = 0; col < dimension; col++) {
-                printf("%4d", matriz[fila][col]);
+    void mostrarMatrizResultado(int matriz[LIMITE][LIMITE], int tam) {  // Muestra solo la matriz resultado
+        for (int i = 0; i < tam; i++) {
+            printf("(");
+            for (int j = 0; j < tam; j++) {
+                printf("%4d", matriz[i][j]);
             }
-            printf(" ]\n");
+            printf(" )\n");
         }
     }
 
-    // Función para sumar dos matrices
-    void sumarMatrices(int m1[MAX][MAX], int m2[MAX][MAX], int resultado[MAX][MAX], int dimension) {
-        for (int fila = 0; fila < dimension; fila++) {
-            for (int col = 0; col < dimension; col++) {
-                resultado[fila][col] = m1[fila][col] + m2[fila][col];
+    void sumar(int a[LIMITE][LIMITE], int b[LIMITE][LIMITE], int res[LIMITE][LIMITE], int tam) {  // Suma A + B
+        for (int i = 0; i < tam; i++)
+            for (int j = 0; j < tam; j++)
+                res[i][j] = a[i][j] + b[i][j];
+    }
+
+    void restar(int a[LIMITE][LIMITE], int b[LIMITE][LIMITE], int res[LIMITE][LIMITE], int tam) {  // Resta A - B
+        for (int i = 0; i < tam; i++)
+            for (int j = 0; j < tam; j++)
+                res[i][j] = a[i][j] - b[i][j];
+    }
+
+    void multiplicar(int a[LIMITE][LIMITE], int b[LIMITE][LIMITE], int res[LIMITE][LIMITE], int tam) {  // Multiplicación A * B
+        for (int i = 0; i < tam; i++)
+            for (int j = 0; j < tam; j++) {
+                res[i][j] = 0;  // Inicializa en 0
+                for (int k = 0; k < tam; k++)
+                    res[i][j] += a[i][k] * b[k][j];  // Acumula el producto
             }
+    }
+
+    void clonar(int origen[LIMITE][LIMITE], int destino[LIMITE][LIMITE], int tam) {  // Copia una matriz en otra
+        for (int i = 0; i < tam; i++)
+            for (int j = 0; j < tam; j++)
+                destino[i][j] = origen[i][j];
+    }
+
+    void elevarMatriz(int matriz[LIMITE][LIMITE], int res[LIMITE][LIMITE], int tam, int potencia) {  // Eleva matriz a potencia n
+        int temp[LIMITE][LIMITE];  // Matriz temporal para el cálculo
+        clonar(matriz, res, tam);  // Copia inicial
+        for (int p = 1; p < potencia; p++) {
+            clonar(res, temp, tam);  // Actualiza matriz temporal
+            multiplicar(temp, matriz, res, tam);  // Multiplica la matriz
         }
     }
 
-    // Función para restar dos matrices
-    void restarMatrices(int m1[MAX][MAX], int m2[MAX][MAX], int resultado[MAX][MAX], int dimension) {
-        for (int fila = 0; fila < dimension; fila++) {
-            for (int col = 0; col < dimension; col++) {
-                resultado[fila][col] = m1[fila][col] - m2[fila][col];
-            }
+    do {  // Solicita tamaño de la matriz hasta que sea válido
+        printf("========= EQUIPO 4 =========\n");
+        printf("======= OPERACIONES DE MATRICES =======\n");
+        printf("==== FUNDAMENTOS DE LA PROGRAMACION ====\n");
+        printf("\nCalculadora para matrices cuadradas hasta 5x5\n");
+        printf("Ingrese el valor N para el tamaño de las matrices (1 a 5): ");
+        scanf("%d", &tam);
+        if (tam < 1 || tam > LIMITE) {
+            printf("Tamaño inválido. Intente con un número entre 1 y 5.\n\n");
         }
-    }
+    } while (tam < 1 || tam > LIMITE);
 
-    // Función para multiplicar dos matrices
-    void multiplicarMatrices(int m1[MAX][MAX], int m2[MAX][MAX], int resultado[MAX][MAX], int dimension) {
-        for (int fila = 0; fila < dimension; fila++) {
-            for (int col = 0; col < dimension; col++) {
-                resultado[fila][col] = 0;
-                for (int k = 0; k < dimension; k++) {
-                    resultado[fila][col] += m1[fila][k] * m2[k][col];
-                }
-            }
-        }
-    }
-
-    // Copia los elementos de una matriz fuente a una matriz destino
-    void copiarDatos(int fuente[MAX][MAX], int destino[MAX][MAX], int dimension) {
-        for (int fila = 0; fila < dimension; fila++) {
-            for (int col = 0; col < dimension; col++) {
-                destino[fila][col] = fuente[fila][col];
-            }
-        }
-    }
-
-    // Función para calcular la potencia de una matriz
-    void calcularPotencia(int base[MAX][MAX], int resultado[MAX][MAX], int dimension, int exponente) {
-        int temporal[MAX][MAX];
-        copiarDatos(base, resultado, dimension);  // Inicializa resultado como la base
-        for (int i = 1; i < exponente; i++) {
-            copiarDatos(resultado, temporal, dimension);  // Copia resultado actual a temporal
-            multiplicarMatrices(temporal, base, resultado, dimension);  // Multiplica temporal por la base
-        }
-    }
-
-    // Solicita al usuario la dimensión N de las matrices (entre 1 y 5)
-    do {
-        printf("=========== GRUPO 4 ===========\n");
-        printf("======= MENU DE OPERACIONES =======\n");
-        printf("=== FUNDAMENTOS DE PROGRAMACION ===\n");
-        printf("\nCalculadora de matrices cuadradas NxN (max 5x5)\n");
-        printf("Ingrese el tamaño N (1 a 5): ");
-        scanf("%d", &dimension);
-        if (dimension < 1 || dimension > MAX) {
-            printf("ERROR: El tamaño debe ser entre 1 y 5.\n\n");
-        }
-    } while (dimension < 1 || dimension > MAX);
-
-    // Menú principal para seleccionar operaciones con matrices
-    do {
-        printf("\nOpciones:\n");
-        printf("1. Suma de matrices\n");
-        printf("2. Resta de matrices\n");
-        printf("3. Producto de matrices\n");
-        printf("4. Potencia de matriz\n");
-        printf("0. Salir\n");
+    do {  // Menú de opciones
+        printf("\nOpciones disponibles:\n");
+        printf("1. Sumar dos matrices\n");
+        printf("2. Restar dos matrices\n");
+        printf("3. Multiplicar dos matrices\n");
+        printf("4. Potenciar una matriz\n");
+        printf("0. Salir del sistema\n");
         printf("Seleccione una opción: ");
-        scanf("%d", &opcion_menu);
+        scanf("%d", &eleccion);
 
-        switch (opcion_menu) {
-            case 1:
-                // Realiza la suma de dos matrices
-                ingresarMatriz(matrizX, dimension, 'X');
-                ingresarMatriz(matrizY, dimension, 'Y');
-                mostrarMatrizConID(matrizX, dimension, 'X');
-                mostrarMatrizConID(matrizY, dimension, 'Y');
-                sumarMatrices(matrizX, matrizY, matrizRes, dimension);
-                printf("Resultado (X + Y):\n");
-                mostrarMatrizSimple(matrizRes, dimension);
+        switch (eleccion) {
+            case 1:  // Opción suma
+                ingresarMatriz(matA, tam, 'A');
+                ingresarMatriz(matB, tam, 'B');
+                mostrarMatrizConEtiqueta(matA, tam, 'A');
+                mostrarMatrizConEtiqueta(matB, tam, 'B');
+                sumar(matA, matB, salida, tam);
+                printf("Resultado (A + B):\n");
+                mostrarMatrizResultado(salida, tam);
                 break;
-            case 2:
-                // Realiza la resta de dos matrices
-                ingresarMatriz(matrizX, dimension, 'X');
-                ingresarMatriz(matrizY, dimension, 'Y');
-                mostrarMatrizConID(matrizX, dimension, 'X');
-                mostrarMatrizConID(matrizY, dimension, 'Y');
-                restarMatrices(matrizX, matrizY, matrizRes, dimension);
-                printf("Resultado (X - Y):\n");
-                mostrarMatrizSimple(matrizRes, dimension);
+            case 2:  // Opción resta
+                ingresarMatriz(matA, tam, 'A');
+                ingresarMatriz(matB, tam, 'B');
+                mostrarMatrizConEtiqueta(matA, tam, 'A');
+                mostrarMatrizConEtiqueta(matB, tam, 'B');
+                restar(matA, matB, salida, tam);
+                printf("Resultado (A - B):\n");
+                mostrarMatrizResultado(salida, tam);
                 break;
-            case 3:
-                // Realiza el producto de dos matrices
-                ingresarMatriz(matrizX, dimension, 'X');
-                ingresarMatriz(matrizY, dimension, 'Y');
-                mostrarMatrizConID(matrizX, dimension, 'X');
-                mostrarMatrizConID(matrizY, dimension, 'Y');
-                multiplicarMatrices(matrizX, matrizY, matrizRes, dimension);
-                printf("Resultado (X * Y):\n");
-                mostrarMatrizSimple(matrizRes, dimension);
+            case 3:  // Opción multiplicación
+                ingresarMatriz(matA, tam, 'A');
+                ingresarMatriz(matB, tam, 'B');
+                mostrarMatrizConEtiqueta(matA, tam, 'A');
+                mostrarMatrizConEtiqueta(matB, tam, 'B');
+                multiplicar(matA, matB, salida, tam);
+                printf("Resultado (A * B):\n");
+                mostrarMatrizResultado(salida, tam);
                 break;
-            case 4:
-                // Calcula la potencia de una matriz
-                ingresarMatriz(matrizX, dimension, 'X');
-                mostrarMatrizConID(matrizX, dimension, 'X');
+            case 4:  // Opción potencia
+                ingresarMatriz(matA, tam, 'A');
+                mostrarMatrizConEtiqueta(matA, tam, 'A');
                 printf("Ingrese el exponente (entero positivo): ");
                 scanf("%d", &exponente);
                 if (exponente < 1) {
-                    printf("Exponente no válido.\n");
+                    printf("Potencia inválida.\n");
                     break;
                 }
-                calcularPotencia(matrizX, matrizRes, dimension, exponente);
-                printf("Resultado (X^%d):\n", exponente);
-                mostrarMatrizSimple(matrizRes, dimension);
+                elevarMatriz(matA, salida, tam, exponente);
+                printf("Resultado (A^%d):\n", exponente);
+                mostrarMatrizResultado(salida, tam);
                 break;
-            case 0:
-                // Sale del programa
-                printf("Finalizando programa.\n");
+            case 0:  // Salida
+                printf("Programa finalizado. ¡Gracias por usarlo!\n");
                 break;
-            default:
-                // Manejo de opción inválida
-                printf("Opción inválida.\n");
+            default:  // Opción inválida
+                printf("Opción incorrecta. Intente nuevamente.\n");
         }
-    } while (opcion_menu != 0);
+    } while (eleccion != 0);
 
-    return 0;
+    return 0;  // Fin del programa
 }
 
