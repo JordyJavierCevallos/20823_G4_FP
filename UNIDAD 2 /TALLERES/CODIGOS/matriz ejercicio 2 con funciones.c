@@ -14,7 +14,7 @@ int main() {
     int N;
     int matriz[100][100];
 
-    // Pedir tamaÒo
+    // Pedir tama√±o
     printf("Ingrese el tamano ne la matriz (N x N): ");
     scanf("%d", &N);
 
@@ -24,7 +24,7 @@ int main() {
     // Mostrar matriz
     mostrarMatriz(matriz, N);
 
-    // Mostrar m·ximos por fila
+    // Mostrar m√°ximos por fila
     mostrarMaximosPorFila(matriz, N);
 
     return 0;
