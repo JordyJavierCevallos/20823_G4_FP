@@ -1,0 +1,56 @@
+#include <stdio.h>
+#define MAX 100
+
+int main() {
+    int N;
+    int matriz[MAX][MAX];
+
+void leerMatriz(int matriz[MAX][MAX], int N) {                   // Función para leer los elementos de la matriz
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("Ingrese el elemento [%d,%d]: ", i, j);
+            scanf("%d", &matriz[i][j]);
+        }
+    }
+}
+
+
+void mostrarMatriz(int matriz[MAX][MAX], int N) {                // Función para mostrar la matriz original
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
+void mostrarMatrizInversa(int matriz[MAX][MAX], int N) {         // Función para mostrar la matriz en orden inverso
+    for (int i = N - 1; i >= 0; i--) {
+        for (int j = N - 1; j >= 0; j--) {
+            printf("%d ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
+
+printf("Ingrese el tamano N de la matriz (maximo %d): ", MAX);
+    scanf("%d", &N);
+
+    if (N > MAX || N <= 0) {
+        printf("Error: tamano invalido.\n");
+        return 1;
+    }
+
+    leerMatriz(matriz, N);
+
+    printf("\nMatriz original:\n");
+    mostrarMatriz(matriz, N);
+
+    printf("\nMatriz en sentido inverso:\n");
+    mostrarMatrizInversa(matriz, N);
+
+    return 0;
+}
