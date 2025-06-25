@@ -1,0 +1,63 @@
+// UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE
+// GRUPO 4
+// NOMBRE: BRYAN MIGUITAMA , ANA ULLOA, JORDY CEVALLOS
+
+#include <stdio.h>
+
+// Función para llenar la matriz
+void llenarMatriz(int N, int mat[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("Elemento [%d, %d]: ", i, j);
+            scanf("%d", &mat[i][j]);
+        }
+    }
+}
+
+// Función para mostrar la matriz
+void mostrarMatriz(int N, int mat[N][N]) {
+    printf("Matriz resultante:\n");
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Función para intercambiar dos filas
+void intercambiarFilas(int N, int mat[N][N], int i, int j) {
+    int aux;
+    for (int k = 0; k < N; k++) {
+        aux = mat[i][k];
+        mat[i][k] = mat[j][k];
+        mat[j][k] = aux;
+    }
+}
+
+int main() {
+    int N, i, j;
+
+    // Solicita el tamaño de la matriz
+    printf("Ingrese el tamano de la matriz N: ");
+    scanf("%d", &N);
+
+    int mat[N][N];
+
+    // Llenar matriz
+    llenarMatriz(N, mat);
+
+    // Solicita las filas (ya en base 0)
+    printf("Ingrese la fila i (desde 0): ");
+    scanf("%d", &i);
+    printf("Ingrese la fila j (desde 0): ");
+    scanf("%d", &j);
+
+    // Intercambia las filas
+    intercambiarFilas(N, mat, i, j);
+
+    // Mostrar resultado
+    mostrarMatriz(N, mat);
+
+    return 0;
+}
