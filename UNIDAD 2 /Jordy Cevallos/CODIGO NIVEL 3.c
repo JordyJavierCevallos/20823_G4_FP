@@ -1,10 +1,9 @@
 /* UNIVERSIDAD DE LAS FUERZAS ARMADAS "ESPE"
 NOMBRE: JORDY CEVALLOS
-REQUISITOS FUNCIONALES NIVEL 2 */
+REQUISITOS FUNCIONALES NIVEL 3 */
 
 #include <stdio.h>
 #include <stdlib.h>
-
 
 int main() {
     int minRango, maxRango;
