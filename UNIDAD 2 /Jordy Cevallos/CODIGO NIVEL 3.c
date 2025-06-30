@@ -4,7 +4,7 @@ REQUISITOS FUNCIONALES NIVEL 2 */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+
 
 int main() {
     int minRango, maxRango;
@@ -16,9 +16,6 @@ int main() {
 
     int intentos[10];               // Para verificar duplicados
     int matrizIntentos[10][3];      // [n° intento][0=valor, 1=resultado, 2=no usado]
-
-    // Inicializar generador aleatorio
-    srand(time(NULL));
 
     // RF01 – Configuración dinámica del rango
     do {
