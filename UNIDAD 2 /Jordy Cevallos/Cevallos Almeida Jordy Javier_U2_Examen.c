@@ -15,7 +15,7 @@ int main() {
     int intentos[10];               // Para verificar duplicados
     int matrizintentos[10][2];      // [numero de intento][0=valor, 1=resultado]
 
-    // RF01 – Usuario define el rango
+    // RF01 â€“ Usuario define el rango
     do {
         printf("Ingrese el valor minimo del rango: ");
         scanf("%d", &minrango);
@@ -27,10 +27,10 @@ int main() {
         }
     } while (minrango >= maxrango);
 
-    // Generar número secreto dentro del rango definido
+    // Generar nÃºmero secreto dentro del rango definido
     numerosecreto = rand() % (maxrango - minrango + 1) + minrango;
 
-    // RF02 – Configuración dinámica de intentos
+    // RF02 â€“ ConfiguraciÃ³n dinÃ¡mica de intentos
     do {
         printf("Cuantos intentos deseas tener Maximo 10: ");
         scanf("%d", &maxintentos);
@@ -46,13 +46,13 @@ int main() {
         printf("Intento %d: ", i + 1);
         scanf("%d", &intentousuario);
 
-        // RF03 – Validacion de rango
+        // RF03 â€“ Validacion de rango
         if (intentousuario < minrango || intentousuario > maxrango) {
             printf("Por favor ingresa un numero entre %d y %d.\n", minrango, maxrango);
             continue;
         }
 
-        // RF03 – Validacion de duplicados
+        // RF03 â€“ Validacion de duplicados
         for (int j = 0; j < i; j++) {
             if (intentousuario == intentos[j]) {
                 duplicado = 1;
@@ -82,11 +82,11 @@ int main() {
             matrizintentos[i][1] = 1; // Muy alto
         }
 
-        i++;  // Aumenta solo si el intento es válido
+        i++;  // Aumenta solo si el intento es vÃ¡lido
         intentosrealizados = i;
     }
 
-    // RF05 – Visualización de resumen detallado
+    // RF05 â€“ VisualizaciÃ³n de resumen detallado
     printf("\n----- RESUMEN DEL JUEGO -----\n");
     printf("Numero secreto: %d\n", numerosecreto);
     printf("Intentos realizados: %d\n", intentosrealizados);
@@ -108,7 +108,7 @@ int main() {
     }
 
     if (!adivinado) {
-        printf("\nNo adivinaste el número.Sigue participando\n");
+        printf("\nNo adivinaste el nÃºmero.Sigue participando\n");
     } else {
         printf("\nFelicidades, eres un genio \n");
     }
