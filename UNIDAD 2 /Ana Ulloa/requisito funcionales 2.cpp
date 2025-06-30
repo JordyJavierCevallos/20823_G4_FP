@@ -65,8 +65,9 @@ int main() {
 
         // Compara el intento con el numero secreto
         if (intento == numeroSecreto) {
-            printf("Adivinaste el numero secreto.\n");
-            printf("Codigo secreto: A programar se aprende jugando\n");
+        	
+            printf("\nAdivinaste ,el numero secreto es %d.\n");
+            
             adivinado = 1; // se adivino el numero
             break; // sale del ciclo
         } else if (intento < numeroSecreto) {
@@ -82,7 +83,7 @@ int main() {
     }
 
     // Muestra todos los intentos 
-    printf("\nResumen de tus intentos:\n");
+    printf("\nResumen:\n");
     for (int j = 0; j < intentosPermitidos; j++) {
         printf("Intento %d: %d\n", j + 1, numeros[j]);
     }
@@ -95,5 +96,3 @@ int main() {
 
     return 0; // Fin del programa
 }
-
-
