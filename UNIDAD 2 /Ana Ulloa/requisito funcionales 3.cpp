@@ -13,9 +13,9 @@ int main() {
     int minimo, maximo;
 
     // RF01 - Configuración dinámica del rango
-    printf("Ingrese el valor minimo del rango: ");
+    printf("Ingrese el valor minimo : ");
     scanf("%d", &minimo);
-    printf("Ingrese el valor maximo del rango: ");
+    printf("Ingrese el valor maximo : ");
     scanf("%d", &maximo);
 
     if (minimo >= maximo) {
@@ -25,7 +25,7 @@ int main() {
 
     int intentosPermitidos;
 
-    // RF02 - Configuración dinámica de intentos
+    // RF02 - Configuracion dinámica de intentos
     do {
         printf("Ingrese la cantidad de intentos (max %d): ", MAX_INTENTOS);
         scanf("%d", &intentosPermitidos);
@@ -79,17 +79,17 @@ int main() {
         // Determina si el intento fue correcto si fue muy alto o muy bajo
         if (intento == numeroSecreto) {
             intentos[i][2] = 2; // correcto
-            printf("Adivinaste el numero secreto.\n");
+            printf("\nAdivinaste, el numero secreto es %d .\n",numeroSecreto);
             adivinado = 1;
             numIntentosValidos++;
             i++;
             break;
         } else if (intento < numeroSecreto) {
             intentos[i][2] = 0; // bajo
-            printf("Demasiado bajo.\n");
+            printf("Muy bajo.\n");
         } else {
             intentos[i][2] = 1; // alto
-            printf("Demasiado alto.\n");
+            printf("Muy alto.\n");
         }
 
         numIntentosValidos++;
@@ -104,16 +104,16 @@ int main() {
 
     // RF05 -  Visualización de resumen detallado
     printf("\nResumen detallado de intentos:\n");
-    printf("Intento | Valor ingresado | Resultado\n");
+    printf("Intento | Valor  | Resultado\n");
     printf("-------------------------------------\n");
     for (int k = 0; k < intentosPermitidos; k++) {
-        printf("%6d | %15d | ", intentos[k][0], intentos[k][1]);
+        printf("%6d | %6d | ", intentos[k][0], intentos[k][1]);
         switch (intentos[k][2]) {
             case 0:
-                printf("Demasiado bajo\n");
+                printf("Muy bajo\n");
                 break;
             case 1:
-                printf("Demasiado alto\n");
+                printf("muy alto\n");
                 break;
             case 2:
                 printf("Correcto\n");
