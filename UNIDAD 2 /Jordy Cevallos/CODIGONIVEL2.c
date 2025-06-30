@@ -4,7 +4,6 @@ REQUISITOS FUNCIONALES NIVEL 2 */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 int main() {
     int minRango, maxRango;
