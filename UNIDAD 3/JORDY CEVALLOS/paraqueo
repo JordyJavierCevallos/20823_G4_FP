@@ -1,0 +1,232 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+// Estructura para un vehículo
+typedef struct {
+    char placa[20];
+    char horaEntrada[10];
+    char horaSalida[10];
+} Vehiculo;
+
+// Convertir placa a mayúsculas
+void convertirMayusculas(char *str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = toupper((unsigned char) str[i]);
+    }
+}
+
+// Buscar vehículo por placa
+int buscarPorPlaca(Vehiculo lista[], int n, char placa[]) {
+    for (int i = 0; i < n; i++) {
+        if (strcmp(lista[i].placa, placa) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Registrar entrada
+void registrarEntrada(Vehiculo *v) {
+    printf("Ingrese la placa del vehículo: ");
+    fgets(v->placa, 20, stdin);
+    v->placa[strcspn(v->placa, "\n")] = '\0';
+    convertirMayusculas(v->placa);
+
+    printf("Ingrese la hora de entrada (HH:MM): ");
+    fgets(v->horaEntrada, 10, stdin);
+    v->horaEntrada[strcspn(v->horaEntrada, "\n")] = '\0';
+
+    strcpy(v->horaSalida, ""); // Vacío porque aún no ha salido
+}
+
+// Registrar salida
+void registrarSalida(Vehiculo *v) {
+    printf("Ingrese la hora de salida (HH:MM): ");
+    fgets(v->horaSalida, 10, stdin);
+    v->horaSalida[strcspn(v->horaSalida, "\n")] = '\0';
+}
+
+// Mostrar información del vehículo
+void mostrarVehiculo(Vehiculo v) {
+    printf("\nPlaca: %s\n", v.placa);
+    printf("Hora de entrada: %s\n", v.horaEntrada);
+    if (strlen(v.horaSalida) > 0)
+        printf("Hora de salida: %s\n", v.horaSalida);
+    else
+        printf("Hora de salida: (Aún en parqueadero)\n");
+}
+
+// Eliminar vehículo
+void eliminarVehiculo(Vehiculo *v) {
+    strcpy(v->placa, "");
+    strcpy(v->horaEntrada, "");
+    strcpy(v->horaSalida, "");
+}
+
+// Editar vehículo
+void editarVehiculo(Vehiculo *v) {
+    int opcionEditar;
+    printf("Seleccione el campo a editar:\n");
+    printf("1. Hora de entrada\n");
+    printf("2. Hora de salida\n");
+    printf("Opción: ");
+    scanf("%d", &opcionEditar);
+    getchar();
+
+    if (opcionEditar == 1) {
+        printf("Ingrese la nueva hora de entrada (HH:MM): ");
+        fgets(v->horaEntrada, 10, stdin);
+        v->horaEntrada[strcspn(v->horaEntrada, "\n")] = '\0';
+        printf("Hora de entrada actualizada.\n");
+    } else if (opcionEditar == 2) {
+        printf("Ingrese la nueva hora de salida (HH:MM): ");
+        fgets(v->horaSalida, 10, stdin);
+        v->horaSalida[strcspn(v->horaSalida, "\n")] = '\0';
+        printf("Hora de salida actualizada.\n");
+    } else {
+        printf("Opción inválida.\n");
+    }
+}
+
+// Convierte hora "HH:MM" a minutos totales desde medianoche
+int convertirHoraAMinutos(const char *hora) {
+    int h, m;
+    sscanf(hora, "%d:%d", &h, &m);
+    return h * 60 + m;
+}
+
+// Calcula el precio según la diferencia entre hora entrada y salida
+int calcularPrecio(char *entrada, char *salida) {
+    int minutosEntrada = convertirHoraAMinutos(entrada);
+    int minutosSalida = convertirHoraAMinutos(salida);
+    int duracion = minutosSalida - minutosEntrada;
+
+    if (duracion <= 10) {
+        return 0; // Gratis hasta 10 min
+    }
+
+    // Cobro por cada hora o fracción
+    int horas = (duracion + 59) / 60;
+    return horas * 75;
+}
+
+int main() {
+    Vehiculo parqueadero[100];
+    int cantidad = 0;
+    int puestosDisponibles = 60;
+
+    int opcion;
+    char placaBuscada[20];
+
+    while (1) {
+        printf("\n--- SISTEMA DE PARQUEADERO ---\n");
+        printf("Puestos disponibles: %d / 60\n", puestosDisponibles);
+        printf("1. Ingresar placa (registrar entrada)\n");
+        printf("2. Registrar salida\n");
+        printf("3. Editar registro\n");
+        printf("4. Mostrar todos los vehículos\n");
+        printf("5. Buscar por placa\n");
+        printf("6. Eliminar registro\n");
+        printf("7. Salir\n");
+        printf("Opción: ");
+        scanf("%d", &opcion);
+        getchar();
+
+        if (opcion == 1) {
+            if (puestosDisponibles > 0) {
+                Vehiculo nuevo;
+                registrarEntrada(&nuevo);
+
+                int existente = buscarPorPlaca(parqueadero, cantidad, nuevo.placa);
+                if (existente != -1 && strlen(parqueadero[existente].horaSalida) == 0) {
+                    printf("Este vehículo ya está registrado sin salida.\n");
+                } else {
+                    parqueadero[cantidad] = nuevo;
+                    cantidad++;
+                    puestosDisponibles--;
+                    printf("Entrada registrada correctamente.\n");
+                    printf("Puestos disponibles: %d / 60\n", puestosDisponibles);
+                }
+            } else {
+                printf("Parqueadero lleno. No hay puestos disponibles.\n");
+            }
+        } else if (opcion == 2) {
+            printf("Ingrese la placa del vehículo para registrar salida: ");
+            fgets(placaBuscada, 20, stdin);
+            placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
+            convertirMayusculas(placaBuscada);
+
+            int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
+            if (pos != -1 && strlen(parqueadero[pos].placa) > 0) {
+                if (strlen(parqueadero[pos].horaSalida) == 0) {
+                    registrarSalida(&parqueadero[pos]);
+                    puestosDisponibles++;
+
+                    int precio = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
+
+                    printf("Salida registrada correctamente.\n");
+                    printf("Duración de estadía: %s - %s\n", parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
+                    printf("Precio a pagar: %d\n", precio);
+                    printf("Puestos disponibles: %d / 60\n", puestosDisponibles);
+                } else {
+                    printf("Este vehículo ya tiene registrada su salida.\n");
+                }
+            } else {
+                printf("Vehículo no encontrado.\n");
+            }
+        } else if (opcion == 3) {
+            printf("Ingrese la placa a editar: ");
+            fgets(placaBuscada, 20, stdin);
+            placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
+            convertirMayusculas(placaBuscada);
+
+            int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
+            if (pos != -1) {
+                editarVehiculo(&parqueadero[pos]);
+            } else {
+                printf("Vehículo no encontrado.\n");
+            }
+        } else if (opcion == 4) {
+            for (int i = 0; i < cantidad; i++) {
+                if (strlen(parqueadero[i].placa) > 0)
+                    mostrarVehiculo(parqueadero[i]);
+            }
+        } else if (opcion == 5) {
+            printf("Ingrese la placa a buscar: ");
+            fgets(placaBuscada, 20, stdin);
+            placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
+            convertirMayusculas(placaBuscada);
+
+            int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
+            if (pos != -1) {
+                mostrarVehiculo(parqueadero[pos]);
+            } else {
+                printf("Vehículo no encontrado.\n");
+            }
+        } else if (opcion == 6) {
+            printf("Ingrese la placa a eliminar: ");
+            fgets(placaBuscada, 20, stdin);
+            placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
+            convertirMayusculas(placaBuscada);
+
+            int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
+            if (pos != -1) {
+                if (strlen(parqueadero[pos].horaSalida) == 0)
+                    puestosDisponibles++;
+                eliminarVehiculo(&parqueadero[pos]);
+                printf("Registro eliminado.\n");
+                printf("Puestos disponibles: %d / 60\n", puestosDisponibles);
+            } else {
+                printf("Vehículo no encontrado.\n");
+            }
+        } else if (opcion == 7) {
+            printf("Saliendo del sistema...\n");
+            break;
+        } else {
+            printf("Opción no válida. Intente de nuevo.\n");
+        }
+    }
+
+    return 0;
+}
