@@ -10,10 +10,10 @@ INTEGRANTES: JORDY CEVALLOS, ANA ULLOA, BRYAN MIGUITAMA
 
 // Estructura que representa un vehiculo
 typedef struct {
-    char placa[20];
-    char horaEntrada[10];
-    char horaSalida[10];
-    float precioPagado;  // Nuevo campo para almacenar el precio pagado
+    char placa[10];          
+    char horaEntrada[5];    
+    char horaSalida[5];    
+    float precioPagado;
 } Vehiculo;
 
 // Convierte cadena a mayusculas
@@ -81,7 +81,7 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
 
     Vehiculo nuevo;
     printf("Ingrese la placa del vehiculo: ");
-    fgets(nuevo.placa, 20, stdin);
+    fgets(nuevo.placa, 10, stdin);
     nuevo.placa[strcspn(nuevo.placa, "\n")] = '\0';
     convertirMayusculas(nuevo.placa);
 
@@ -100,7 +100,7 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
     }
 
     printf("Ingrese la hora de entrada (HH:MM): ");
-    fgets(nuevo.horaEntrada, 10, stdin);
+    fgets(nuevo.horaEntrada, 5, stdin);
     nuevo.horaEntrada[strcspn(nuevo.horaEntrada, "\n")] = '\0';
 
     strcpy(nuevo.horaSalida, ""); // Inicializa salida vacia
@@ -115,9 +115,9 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
 
 // Registrar la salida del vehiculo
 void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantidad) {
-    char placaBuscada[20];
+    char placaBuscada[10];
     printf("Ingrese la placa: ");
-    fgets(placaBuscada, 20, stdin);
+    fgets(placaBuscada, 10, stdin);
     placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
     convertirMayusculas(placaBuscada);
 
@@ -133,7 +133,7 @@ void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantid
     }
 
     printf("Ingrese la hora de salida (HH:MM): ");
-    fgets(parqueadero[pos].horaSalida, 10, stdin);
+    fgets(parqueadero[pos].horaSalida, 5, stdin);
     parqueadero[pos].horaSalida[strcspn(parqueadero[pos].horaSalida, "\n")] = '\0';
 
     float precio = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
