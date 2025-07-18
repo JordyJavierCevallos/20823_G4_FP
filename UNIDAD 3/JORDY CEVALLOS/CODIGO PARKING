@@ -1,3 +1,9 @@
+/*UNIVERSIDAD DE LAS FUERSAS ARMADAS
+            ESPE       
+PROYECTO DE FUNDAMENTOS DE PROGRAMACION
+INTEGRANTES: JORDY CEVALLOS, ANA ULLOA, BRYAN MIGUITAMA
+        PARQUEADERO AUTOMATIZADO*/
+        
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -93,7 +99,7 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
     }
 
     if (encontrado != -1) {
-        printf("⚠️ Advertencia: El vehículo con placa %s ya está registrado SIN SALIDA.\n", nuevo.placa);
+        printf("Advertencia: El vehículo con placa %s ya está registrado SIN SALIDA.\n", nuevo.placa);
         return; // No permite registrar duplicado sin salida
     }
 
@@ -106,7 +112,7 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
     (*cantidad)++;
     (*puestosDisponibles)--;
 
-    printf("✅ Entrada registrada correctamente.\n");
+    printf("Entrada registrada correctamente.\n");
 }
 
 // Registrar la salida del vehículo
@@ -119,12 +125,12 @@ void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantid
 
     int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
     if (pos == -1) {
-        printf("❌ Vehículo no encontrado.\n");
+        printf("Vehículo no encontrado.\n");
         return;
     }
 
     if (strlen(parqueadero[pos].horaSalida) != 0) {
-        printf("⚠️ El vehículo ya tiene salida registrada.\n");
+        printf("El vehículo ya tiene salida registrada.\n");
         return;
     }
 
@@ -134,7 +140,7 @@ void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantid
 
     float precio = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
     printf("Duración de estadía: %s - %s\n", parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
-    printf("💵 Precio a pagar: $%.2f\n", precio);
+    printf(" Precio a pagar: $%.2f\n", precio);
 
     (*puestosDisponibles)++;
 }
