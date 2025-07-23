@@ -8,7 +8,6 @@ INTEGRANTES: JORDY CEVALLOS, ANA ULLOA, BRYAN MIGUITAMA
 #include <string.h>
 #include <ctype.h>
 
-// Estructura que representa un vehiculo
 typedef struct {
     char placa[20];
     char marca[30];
@@ -24,7 +23,6 @@ void convertirMayusculas(char *str) {
     }
 }
 
-// Validar que la placa contenga solo letras y números
 int validarPlaca(const char *placa) {
     for (int i = 0; placa[i] != '\0'; i++) {
         if (!isalnum((unsigned char)placa[i])) {
@@ -34,7 +32,6 @@ int validarPlaca(const char *placa) {
     return 1;
 }
 
-// Validar que marca y color solo contengan letras y espacios
 int validarTextoSoloLetras(const char *texto) {
     for (int i = 0; texto[i] != '\0'; i++) {
         if (!isalpha((unsigned char)texto[i]) && texto[i] != ' ') {
@@ -44,7 +41,6 @@ int validarTextoSoloLetras(const char *texto) {
     return 1;
 }
 
-// Validar que la hora esté en formato HH:MM y solo números
 int validarHora(const char *hora) {
     int h, m;
     if (sscanf(hora, "%d:%d", &h, &m) != 2)
@@ -109,45 +105,57 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
 
     Vehiculo nuevo;
 
-    printf("Ingrese la placa del vehiculo: ");
-    fgets(nuevo.placa, 20, stdin);
-    nuevo.placa[strcspn(nuevo.placa, "\n")] = '\0';
-    convertirMayusculas(nuevo.placa);
-    if (!validarPlaca(nuevo.placa)) {
-        printf("Error: La placa contiene caracteres inválidos.\n");
-        return;
-    }
+    // Placa
+    do {
+        printf("Ingrese la placa del vehiculo: ");
+        fgets(nuevo.placa, 20, stdin);
+        nuevo.placa[strcspn(nuevo.placa, "\n")] = '\0';
+        convertirMayusculas(nuevo.placa);
 
-    printf("Ingrese la marca del vehiculo: ");
-    fgets(nuevo.marca, 30, stdin);
-    nuevo.marca[strcspn(nuevo.marca, "\n")] = '\0';
-    if (!validarTextoSoloLetras(nuevo.marca)) {
-        printf("Error: La marca solo debe contener letras.\n");
-        return;
-    }
+        if (!validarPlaca(nuevo.placa)) {
+            printf("Error: La placa contiene caracteres invalidos.\n");
+        }
+    } while (!validarPlaca(nuevo.placa));
 
-    printf("Ingrese el color del vehiculo: ");
-    fgets(nuevo.color, 20, stdin);
-    nuevo.color[strcspn(nuevo.color, "\n")] = '\0';
-    if (!validarTextoSoloLetras(nuevo.color)) {
-        printf("Error: El color solo debe contener letras.\n");
-        return;
-    }
+    // Marca
+    do {
+        printf("Ingrese la marca del vehiculo: ");
+        fgets(nuevo.marca, 30, stdin);
+        nuevo.marca[strcspn(nuevo.marca, "\n")] = '\0';
+
+        if (!validarTextoSoloLetras(nuevo.marca)) {
+            printf("Error: La marca solo debe contener letras.\n");
+        }
+    } while (!validarTextoSoloLetras(nuevo.marca));
+
+    // Color
+    do {
+        printf("Ingrese el color del vehiculo: ");
+        fgets(nuevo.color, 20, stdin);
+        nuevo.color[strcspn(nuevo.color, "\n")] = '\0';
+
+        if (!validarTextoSoloLetras(nuevo.color)) {
+            printf("Error: El color solo debe contener letras.\n");
+        }
+    } while (!validarTextoSoloLetras(nuevo.color));
 
     for (int i = 0; i < *cantidad; i++) {
         if (strcmp(parqueadero[i].placa, nuevo.placa) == 0 && strlen(parqueadero[i].horaSalida) == 0) {
-            printf("El vehiculo ya está registrado sin salida.\n");
+            printf("El vehiculo ya esta registrado sin salida.\n");
             return;
         }
     }
 
-    printf("Ingrese la hora de entrada (HH:MM): ");
-    fgets(nuevo.horaEntrada, 10, stdin);
-    nuevo.horaEntrada[strcspn(nuevo.horaEntrada, "\n")] = '\0';
-    if (!validarHora(nuevo.horaEntrada)) {
-        printf("Error: Formato de hora inválido. Use HH:MM.\n");
-        return;
-    }
+    // Hora de entrada
+    do {
+        printf("Ingrese la hora de entrada (HH:MM): ");
+        fgets(nuevo.horaEntrada, 10, stdin);
+        nuevo.horaEntrada[strcspn(nuevo.horaEntrada, "\n")] = '\0';
+
+        if (!validarHora(nuevo.horaEntrada)) {
+            printf("Error: Formato de hora invalido. Use HH:MM.\n");
+        }
+    } while (!validarHora(nuevo.horaEntrada));
 
     strcpy(nuevo.horaSalida, "");
     nuevo.precioPagado = 0.0;
@@ -177,13 +185,16 @@ void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantid
         return;
     }
 
-    printf("Ingrese la hora de salida (HH:MM): ");
-    fgets(parqueadero[pos].horaSalida, 10, stdin);
-    parqueadero[pos].horaSalida[strcspn(parqueadero[pos].horaSalida, "\n")] = '\0';
-    if (!validarHora(parqueadero[pos].horaSalida)) {
-        printf("Error: Formato de hora inválido. Use HH:MM.\n");
-        return;
-    }
+    // Hora de salida
+    do {
+        printf("Ingrese la hora de salida (HH:MM): ");
+        fgets(parqueadero[pos].horaSalida, 10, stdin);
+        parqueadero[pos].horaSalida[strcspn(parqueadero[pos].horaSalida, "\n")] = '\0';
+
+        if (!validarHora(parqueadero[pos].horaSalida)) {
+            printf("Error: Formato de hora invalido. Use HH:MM.\n");
+        }
+    } while (!validarHora(parqueadero[pos].horaSalida));
 
     parqueadero[pos].precioPagado = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
 
@@ -208,47 +219,54 @@ void modificarVehiculo(Vehiculo parqueadero[], int cantidad) {
 
     Vehiculo *v = &parqueadero[pos];
 
-    printf("Nueva placa: ");
-    fgets(v->placa, 20, stdin);
-    v->placa[strcspn(v->placa, "\n")] = '\0';
-    convertirMayusculas(v->placa);
-    if (!validarPlaca(v->placa)) {
-        printf("Error: Placa inválida.\n");
-        return;
-    }
+    do {
+        printf("Nueva placa: ");
+        fgets(v->placa, 20, stdin);
+        v->placa[strcspn(v->placa, "\n")] = '\0';
+        convertirMayusculas(v->placa);
 
-    printf("Nueva marca: ");
-    fgets(v->marca, 30, stdin);
-    v->marca[strcspn(v->marca, "\n")] = '\0';
-    if (!validarTextoSoloLetras(v->marca)) {
-        printf("Error: Marca inválida.\n");
-        return;
-    }
+        if (!validarPlaca(v->placa)) {
+            printf("Error: Placa invalida.\n");
+        }
+    } while (!validarPlaca(v->placa));
 
-    printf("Nuevo color: ");
-    fgets(v->color, 20, stdin);
-    v->color[strcspn(v->color, "\n")] = '\0';
-    if (!validarTextoSoloLetras(v->color)) {
-        printf("Error: Color inválido.\n");
-        return;
-    }
+    do {
+        printf("Nueva marca: ");
+        fgets(v->marca, 30, stdin);
+        v->marca[strcspn(v->marca, "\n")] = '\0';
 
-    printf("Nueva hora de entrada (HH:MM): ");
-    fgets(v->horaEntrada, 10, stdin);
-    v->horaEntrada[strcspn(v->horaEntrada, "\n")] = '\0';
-    if (!validarHora(v->horaEntrada)) {
-       
-        printf("Error: Formato de hora de entrada inválido.\n");
-        return;
-    }
+        if (!validarTextoSoloLetras(v->marca)) {
+            printf("Error: Marca invalida.\n");
+        }
+    } while (!validarTextoSoloLetras(v->marca));
 
-    printf("Nueva hora de salida (HH:MM o vacío si no ha salido): ");
+    do {
+        printf("Nuevo color: ");
+        fgets(v->color, 20, stdin);
+        v->color[strcspn(v->color, "\n")] = '\0';
+
+        if (!validarTextoSoloLetras(v->color)) {
+            printf("Error: Color invalido.\n");
+        }
+    } while (!validarTextoSoloLetras(v->color));
+
+    do {
+        printf("Nueva hora de entrada (HH:MM): ");
+        fgets(v->horaEntrada, 10, stdin);
+        v->horaEntrada[strcspn(v->horaEntrada, "\n")] = '\0';
+
+        if (!validarHora(v->horaEntrada)) {
+            printf("Error: Formato de hora de entrada invalido.\n");
+        }
+    } while (!validarHora(v->horaEntrada));
+
+    printf("Nueva hora de salida (HH:MM o vacio si no ha salido): ");
     fgets(v->horaSalida, 10, stdin);
     v->horaSalida[strcspn(v->horaSalida, "\n")] = '\0';
 
     if (strlen(v->horaSalida) > 0) {
         if (!validarHora(v->horaSalida)) {
-            printf("Error: Formato de hora de salida inválido.\n");
+            printf("Error: Formato de hora de salida invalido.\n");
             return;
         }
         v->precioPagado = calcularPrecio(v->horaEntrada, v->horaSalida);
