@@ -20,8 +20,38 @@ typedef struct {
 
 void convertirMayusculas(char *str) {
     for (int i = 0; str[i]; i++) {
-        str[i] = toupper((unsigned char) str[i]);
+        str[i] = toupper((unsigned char)str[i]);
     }
+}
+
+// Validar que la placa contenga solo letras y números
+int validarPlaca(const char *placa) {
+    for (int i = 0; placa[i] != '\0'; i++) {
+        if (!isalnum((unsigned char)placa[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// Validar que marca y color solo contengan letras y espacios
+int validarTextoSoloLetras(const char *texto) {
+    for (int i = 0; texto[i] != '\0'; i++) {
+        if (!isalpha((unsigned char)texto[i]) && texto[i] != ' ') {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// Validar que la hora esté en formato HH:MM y solo números
+int validarHora(const char *hora) {
+    int h, m;
+    if (sscanf(hora, "%d:%d", &h, &m) != 2)
+        return 0;
+    if (h < 0 || h > 23 || m < 0 || m > 59)
+        return 0;
+    return 1;
 }
 
 int buscarPorPlaca(Vehiculo lista[], int n, char placa[]) {
@@ -78,22 +108,35 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
     }
 
     Vehiculo nuevo;
+
     printf("Ingrese la placa del vehiculo: ");
     fgets(nuevo.placa, 20, stdin);
     nuevo.placa[strcspn(nuevo.placa, "\n")] = '\0';
     convertirMayusculas(nuevo.placa);
+    if (!validarPlaca(nuevo.placa)) {
+        printf("Error: La placa contiene caracteres inválidos.\n");
+        return;
+    }
 
     printf("Ingrese la marca del vehiculo: ");
     fgets(nuevo.marca, 30, stdin);
     nuevo.marca[strcspn(nuevo.marca, "\n")] = '\0';
+    if (!validarTextoSoloLetras(nuevo.marca)) {
+        printf("Error: La marca solo debe contener letras.\n");
+        return;
+    }
 
     printf("Ingrese el color del vehiculo: ");
     fgets(nuevo.color, 20, stdin);
     nuevo.color[strcspn(nuevo.color, "\n")] = '\0';
+    if (!validarTextoSoloLetras(nuevo.color)) {
+        printf("Error: El color solo debe contener letras.\n");
+        return;
+    }
 
     for (int i = 0; i < *cantidad; i++) {
         if (strcmp(parqueadero[i].placa, nuevo.placa) == 0 && strlen(parqueadero[i].horaSalida) == 0) {
-            printf("Advertencia: El vehiculo con placa %s ya esta registrado SIN SALIDA.\n", nuevo.placa);
+            printf("El vehiculo ya está registrado sin salida.\n");
             return;
         }
     }
@@ -101,6 +144,10 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
     printf("Ingrese la hora de entrada (HH:MM): ");
     fgets(nuevo.horaEntrada, 10, stdin);
     nuevo.horaEntrada[strcspn(nuevo.horaEntrada, "\n")] = '\0';
+    if (!validarHora(nuevo.horaEntrada)) {
+        printf("Error: Formato de hora inválido. Use HH:MM.\n");
+        return;
+    }
 
     strcpy(nuevo.horaSalida, "");
     nuevo.precioPagado = 0.0;
@@ -109,65 +156,51 @@ void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponi
     (*cantidad)++;
     (*puestosDisponibles)--;
 
-    FILE *archivo = fopen("registro_parqueadero.txt", "a");
-    if (archivo != NULL) {
-        fprintf(archivo, "ENTRADA | Placa: %s | Marca: %s | Color: %s | Hora entrada: %s\n",
-                nuevo.placa, nuevo.marca, nuevo.color, nuevo.horaEntrada);
-        fclose(archivo);
-    }
-
-    printf("Entrada registrada correctamente.\n");
+    printf("Vehiculo registrado correctamente.\n");
 }
 
 void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantidad) {
-    char placaBuscada[20];
+    char placa[20];
     printf("Ingrese la placa: ");
-    fgets(placaBuscada, 20, stdin);
-    placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
-    convertirMayusculas(placaBuscada);
+    fgets(placa, 20, stdin);
+    placa[strcspn(placa, "\n")] = '\0';
+    convertirMayusculas(placa);
 
-    int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
+    int pos = buscarPorPlaca(parqueadero, cantidad, placa);
     if (pos == -1) {
         printf("Vehiculo no encontrado.\n");
         return;
     }
 
     if (strlen(parqueadero[pos].horaSalida) != 0) {
-        printf("El vehiculo ya tiene salida registrada.\n");
+        printf("La salida ya fue registrada.\n");
         return;
     }
 
     printf("Ingrese la hora de salida (HH:MM): ");
     fgets(parqueadero[pos].horaSalida, 10, stdin);
     parqueadero[pos].horaSalida[strcspn(parqueadero[pos].horaSalida, "\n")] = '\0';
+    if (!validarHora(parqueadero[pos].horaSalida)) {
+        printf("Error: Formato de hora inválido. Use HH:MM.\n");
+        return;
+    }
 
-    float precio = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
-    parqueadero[pos].precioPagado = precio;
+    parqueadero[pos].precioPagado = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
 
     printf("Duracion: %s - %s\n", parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
-    printf("Precio a pagar: $%.2f\n", precio);
+    printf("Precio a pagar: $%.2f\n", parqueadero[pos].precioPagado);
 
     (*puestosDisponibles)++;
-
-    FILE *archivo = fopen("registro_parqueadero.txt", "a");
-    if (archivo != NULL) {
-        fprintf(archivo, "SALIDA | Placa: %s | Entrada: %s | Salida: %s | Pago: $%.2f\n",
-                parqueadero[pos].placa,
-                parqueadero[pos].horaEntrada,
-                parqueadero[pos].horaSalida,
-                parqueadero[pos].precioPagado);
-        fclose(archivo);
-    }
 }
 
 void modificarVehiculo(Vehiculo parqueadero[], int cantidad) {
-    char placaBuscada[20];
+    char placa[20];
     printf("Ingrese la placa del vehiculo a modificar: ");
-    fgets(placaBuscada, 20, stdin);
-    placaBuscada[strcspn(placaBuscada, "\n")] = '\0';
-    convertirMayusculas(placaBuscada);
+    fgets(placa, 20, stdin);
+    placa[strcspn(placa, "\n")] = '\0';
+    convertirMayusculas(placa);
 
-    int pos = buscarPorPlaca(parqueadero, cantidad, placaBuscada);
+    int pos = buscarPorPlaca(parqueadero, cantidad, placa);
     if (pos == -1) {
         printf("Vehiculo no encontrado.\n");
         return;
@@ -175,35 +208,49 @@ void modificarVehiculo(Vehiculo parqueadero[], int cantidad) {
 
     Vehiculo *v = &parqueadero[pos];
 
-    printf("\n--- Modificando datos del vehiculo ---\n");
-
-    printf("Placa actual: %s\n", v->placa);
     printf("Nueva placa: ");
     fgets(v->placa, 20, stdin);
     v->placa[strcspn(v->placa, "\n")] = '\0';
     convertirMayusculas(v->placa);
+    if (!validarPlaca(v->placa)) {
+        printf("Error: Placa inválida.\n");
+        return;
+    }
 
-    printf("Marca actual: %s\n", v->marca);
     printf("Nueva marca: ");
     fgets(v->marca, 30, stdin);
     v->marca[strcspn(v->marca, "\n")] = '\0';
+    if (!validarTextoSoloLetras(v->marca)) {
+        printf("Error: Marca inválida.\n");
+        return;
+    }
 
-    printf("Color actual: %s\n", v->color);
     printf("Nuevo color: ");
     fgets(v->color, 20, stdin);
     v->color[strcspn(v->color, "\n")] = '\0';
+    if (!validarTextoSoloLetras(v->color)) {
+        printf("Error: Color inválido.\n");
+        return;
+    }
 
-    printf("Hora de entrada actual: %s\n", v->horaEntrada);
     printf("Nueva hora de entrada (HH:MM): ");
     fgets(v->horaEntrada, 10, stdin);
     v->horaEntrada[strcspn(v->horaEntrada, "\n")] = '\0';
+    if (!validarHora(v->horaEntrada)) {
+       
+        printf("Error: Formato de hora de entrada inválido.\n");
+        return;
+    }
 
-    printf("Hora de salida actual: %s\n", strlen(v->horaSalida) ? v->horaSalida : "No registrada");
-    printf("Nueva hora de salida (HH:MM o vacio si no ha salido): ");
+    printf("Nueva hora de salida (HH:MM o vacío si no ha salido): ");
     fgets(v->horaSalida, 10, stdin);
     v->horaSalida[strcspn(v->horaSalida, "\n")] = '\0';
 
     if (strlen(v->horaSalida) > 0) {
+        if (!validarHora(v->horaSalida)) {
+            printf("Error: Formato de hora de salida inválido.\n");
+            return;
+        }
         v->precioPagado = calcularPrecio(v->horaEntrada, v->horaSalida);
         printf("Nuevo precio calculado: $%.2f\n", v->precioPagado);
     } else {
@@ -217,31 +264,16 @@ void finalizarDia(Vehiculo parqueadero[], int cantidad) {
     float total = 0.0;
     printf("\n--- Cierre del Dia ---\n");
 
-    FILE *archivo = fopen("registro_parqueadero.txt", "a");
-    if (archivo != NULL) {
-        fprintf(archivo, "\n--- CIERRE DEL DIA ---\n");
-    }
-
     for (int i = 0; i < cantidad; i++) {
         if (parqueadero[i].precioPagado > 0) {
             printf("Placa: %s - Pago: $%.2f\n", parqueadero[i].placa, parqueadero[i].precioPagado);
             total += parqueadero[i].precioPagado;
-
-            if (archivo != NULL) {
-                fprintf(archivo, "CIERRE | Placa: %s | Pago: $%.2f\n", parqueadero[i].placa, parqueadero[i].precioPagado);
-            }
         }
     }
 
-    if (archivo != NULL) {
-        fprintf(archivo, "TOTAL RECAUDADO: $%.2f\n\n", total);
-        fclose(archivo);
-    }
-
-    printf("Total recaudado en el dia: $%.2f\n", total);
+    printf("Total recaudado: $%.2f\n", total);
 }
 
-// PROGRAMA PRINCIPAL
 int main() {
     Vehiculo parqueadero[100];
     int cantidad = 0;
@@ -253,44 +285,28 @@ int main() {
         printf("Puestos disponibles: %d / 60\n", puestosDisponibles);
         printf("1. Ingresar vehiculo\n");
         printf("2. Registrar salida\n");
-        printf("3. Mostrar vehiculos\n");
-        printf("4. Modificar vehiculo\n");
+        printf("3. Modificar datos vehiculo\n");
+        printf("4. Mostrar vehiculos\n");
         printf("5. Finalizar dia\n");
         printf("6. Salir\n");
         printf("Opcion: ");
         scanf("%d", &opcion);
-        getchar(); // limpia el buffer
+        getchar(); // limpiar buffer
 
         if (opcion == 1) {
             registrarEntrada(parqueadero, &cantidad, &puestosDisponibles);
         } else if (opcion == 2) {
             registrarSalida(parqueadero, &puestosDisponibles, cantidad);
         } else if (opcion == 3) {
-            for (int i = 0; i < cantidad; i++) {
-                if (strlen(parqueadero[i].placa) > 0)
-                    mostrarVehiculo(parqueadero[i]);
-            }
-        } else if (opcion == 4) {
             modificarVehiculo(parqueadero, cantidad);
+        } else if (opcion == 4) {
+            for (int i = 0; i < cantidad; i++) {
+                mostrarVehiculo(parqueadero[i]);
+            }
         } else if (opcion == 5) {
             finalizarDia(parqueadero, cantidad);
         } else if (opcion == 6) {
             printf("Saliendo del sistema...\n");
-
-            FILE *archivo = fopen("registro_parqueadero.txt", "a");
-            if (archivo != NULL) {
-                fprintf(archivo, "\n--- SALIDA DEL SISTEMA ---\n");
-                for (int i = 0; i < cantidad; i++) {
-                    fprintf(archivo, "Placa: %s | Marca: %s | Color: %s | Entrada: %s | Salida: %s | Pago: $%.2f\n",
-                            parqueadero[i].placa,
-                            parqueadero[i].marca,
-                            parqueadero[i].color,
-                            parqueadero[i].horaEntrada,
-                            parqueadero[i].horaSalida,
-                            parqueadero[i].precioPagado);
-                }
-                fclose(archivo);
-            }
             break;
         } else {
             printf("Opcion invalida.\n");
