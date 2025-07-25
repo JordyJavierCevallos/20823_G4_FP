@@ -1,0 +1,138 @@
+Proceso Parqueadero
+
+    Definir MAX Como Entero
+    MAX <- 100
+
+    Dimension placa[MAX], marca[MAX], color[MAX], entrada[MAX], salida[MAX], pagado[MAX]
+    Definir cantidad, opcion, i Como Entero
+    Definir buscada Como Cadena
+    Definir total Como Real
+    cantidad <- 1
+
+    // Función para convertir HH:MM en minutos
+    SubProceso convertirHoraMinutos(hora: Cadena) : Entero
+        Definir partes, h, m Como Entero
+        Dimension partes[2]
+        Separar(hora, ":", partes)
+        h <- ConvertirANumero(partes[0])
+        m <- ConvertirANumero(partes[1])
+        retornar h * 60 + m
+    FinSubProceso
+
+    Repetir
+        Escribir ""
+        Escribir "--- MENÚ PARQUEADERO ---"
+        Escribir "1. Registrar ingreso de vehículo"
+        Escribir "2. Registrar salida de vehículo"
+        Escribir "3. Mostrar todos los vehículos"
+        Escribir "4. Buscar vehículo por placa"
+        Escribir "5. Modificar datos de vehículo"
+        Escribir "6. Finalizar día y mostrar resumen"
+        Escribir "7. Salir"
+        Escribir "Opción:"
+        Leer opcion
+
+        Segun opcion Hacer
+
+            1:
+                Si cantidad <= MAX Entonces
+                    Escribir "Placa:"
+                    Leer placa[cantidad]
+                    Escribir "Marca:"
+                    Leer marca[cantidad]
+                    Escribir "Color:"
+                    Leer color[cantidad]
+                    Escribir "Hora entrada (hh:mm):"
+                    Leer entrada[cantidad]
+                    salida[cantidad] <- ""
+                    pagado[cantidad] <- 0
+                    Escribir "Vehículo registrado correctamente."
+                    cantidad <- cantidad + 1
+                Sino
+                    Escribir "El parqueadero está lleno."
+                FinSi
+
+            2:
+                Escribir "Placa del vehículo que sale:"
+                Leer buscada
+                Para i <- 1 Hasta cantidad - 1 Con Paso 1 Hacer
+                    Si placa[i] = buscada Y pagado[i] = 0 Entonces
+                        Escribir "Hora de salida (hh:mm):"
+                        Leer salida[i]
+
+                        Definir minEntrada, minSalida, duracion, horas, resto Como Entero
+                        minEntrada <- convertirHoraMinutos(entrada[i])
+                        minSalida <- convertirHoraMinutos(salida[i])
+                        duracion <- minSalida - minEntrada
+
+                        Si duracion <= 15 Entonces
+                            pagado[i] <- 0
+                        SinoSi duracion < 60 Entonces
+                            pagado[i] <- 0.50
+                        Sino
+                            horas <- Trunc(duracion / 60)
+                            resto <- duracion % 60
+                            pagado[i] <- horas * 0.75
+                            Si resto >= 30 Entonces
+                                pagado[i] <- pagado[i] + 0.50
+                            FinSi
+                        FinSi
+
+                        Escribir "Duración: ", duracion, " minutos"
+                        Escribir "Total a pagar: $", pagado[i]
+                    FinSi
+                FinPara
+
+            3:
+                Escribir "--- LISTADO DE VEHÍCULOS ---"
+                Para i <- 1 Hasta cantidad - 1 Con Paso 1 Hacer
+                    Escribir "Placa: ", placa[i], " | Marca: ", marca[i], " | Color: ", color[i]
+                    Escribir "Entrada: ", entrada[i], " | Salida: ", salida[i], " | Pagado: $", pagado[i]
+                    Escribir ""
+                FinPara
+
+            4:
+                Escribir "Buscar placa:"
+                Leer buscada
+                Para i <- 1 Hasta cantidad - 1 Con Paso 1 Hacer
+                    Si placa[i] = buscada Entonces
+                        Escribir "Placa: ", placa[i], " | Marca: ", marca[i], " | Color: ", color[i]
+                        Escribir "Entrada: ", entrada[i], " | Salida: ", salida[i], " | Pagado: $", pagado[i]
+                    FinSi
+                FinPara
+
+            5:
+                Escribir "Modificar vehículo (por placa):"
+                Leer buscada
+                Para i <- 1 Hasta cantidad - 1 Con Paso 1 Hacer
+                    Si placa[i] = buscada Entonces
+                        Escribir "Nueva marca:"
+                        Leer marca[i]
+                        Escribir "Nuevo color:"
+                        Leer color[i]
+                        Escribir "Modificación realizada."
+                    FinSi
+                FinPara
+
+            6:
+                total <- 0
+                Escribir "--- RESUMEN DEL DÍA ---"
+                Para i <- 1 Hasta cantidad - 1 Con Paso 1 Hacer
+                    Si pagado[i] > 0 Entonces
+                        Escribir placa[i], ": $", pagado[i]
+                        total <- total + pagado[i]
+                    FinSi
+                FinPara
+                Escribir "TOTAL RECAUDADO: $", total
+
+            7:
+                Escribir "👋 Sistema cerrado. ¡Hasta pronto!"
+
+            De Otro Modo:
+                Escribir "Opción inválida. Intente de nuevo."
+
+        FinSegun
+
+    Hasta Que opcion = 7
+
+FinProceso
