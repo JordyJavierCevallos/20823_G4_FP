@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <string.h>
+
+// Definicion del TDA Estudiante con asignatura y notas
+typedef struct {
+    char nombre[50];
+    char asignatura[50];
+    float nota1;
+    float nota2;
+    float nota3;
+    float promedio;
+    char estado[12];  // "APROBADO" o "REPROBADO"
+} Estudiante;
+
+// Funcion para calcular el promedio y asignar el estado
+void calcularPromedioYEstado(Estudiante *e) {
+    e->promedio = (e->nota1 + e->nota2 + e->nota3) / 3.0;
+    if (e->promedio >= 6.0)
+        strcpy(e->estado, "APROBADO");
+    else
+        strcpy(e->estado, "REPROBADO");
+}
+
+// Funcion para mostrar los datos del estudiante
+void mostrarEstudiante(Estudiante e) {
+    printf("Nombre: %s\n", e.nombre);
+    printf("Asignatura: %s\n", e.asignatura);
+    printf("Nota 1: %.2f\n", e.nota1);
+    printf("Nota 2: %.2f\n", e.nota2);
+    printf("Nota 3: %.2f\n", e.nota3);
+    printf("Promedio: %.2f\n", e.promedio);
+    printf("Estado: %s\n", e.estado);
+}
+
+int main() {
+    int n;
+
+    printf("Ingrese el numero de estudiantes: ");
+    scanf("%d", &n);
+
+    Estudiante lista[n];
+
+    for (int i = 0; i < n; i++) {
+        printf("\n--- Estudiante %d ---\n", i+1);
+
+        getchar(); // limpiar buffer
+
+        printf("Nombre: ");
+        fgets(lista[i].nombre, sizeof(lista[i].nombre), stdin);
+        lista[i].nombre[strcspn(lista[i].nombre, "\n")] = 0; // quitar salto de linea
+
+        printf("Asignatura: ");
+        fgets(lista[i].asignatura, sizeof(lista[i].asignatura), stdin);
+        lista[i].asignatura[strcspn(lista[i].asignatura, "\n")] = 0;
+
+        printf("Nota 1: ");
+        scanf("%f", &lista[i].nota1);
+        printf("Nota 2: ");
+        scanf("%f", &lista[i].nota2);
+        printf("Nota 3: ");
+        scanf("%f", &lista[i].nota3);
+
+        calcularPromedioYEstado(&lista[i]);
+    }
+
+    printf("\n--- Resultados ---\n");
+    for (int i = 0; i < n; i++) {
+        mostrarEstudiante(lista[i]);
+        printf("----------------------\n");
+    }
+
+    return 0;
+}
