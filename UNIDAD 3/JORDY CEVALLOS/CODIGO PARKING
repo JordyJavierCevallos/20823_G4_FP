@@ -5,58 +5,37 @@ INTEGRANTES: JORDY CEVALLOS, ANA ULLOA, BRYAN MIGUITAMA
         PARQUEADERO AUTOMATIZADO*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
+
+// Inclusión condicional para crear carpetas
+#ifdef _WIN32
+    #include <direct.h>
+    #define mkdir(path, mode) _mkdir(path)
+#else
+    #include <sys/stat.h>
+    #include <sys/types.h>
+#endif
+
+#define MAX_VEHICULOS 100
 
 typedef struct {
-    char placa[20];
-    char marca[30];
-    char color[20];
-    char horaEntrada[10];
-    char horaSalida[10];
+    char placa[10];
+    char marca[20];
+    char color[15];
+    char horaEntrada[6];
+    char horaSalida[6];
     float precioPagado;
 } Vehiculo;
 
-void convertirMayusculas(char *str) {
-    for (int i = 0; str[i]; i++) {
-        str[i] = toupper((unsigned char)str[i]);
-    }
+void crearDirectorioResumenes() {
+    mkdir("resumenes", 0777); // Crea carpeta (Windows usa _mkdir por define)
 }
 
-int validarPlaca(const char *placa) {
-    for (int i = 0; placa[i] != '\0'; i++) {
-        if (!isalnum((unsigned char)placa[i])) {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-int validarTextoSoloLetras(const char *texto) {
-    for (int i = 0; texto[i] != '\0'; i++) {
-        if (!isalpha((unsigned char)texto[i]) && texto[i] != ' ') {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-int validarHora(const char *hora) {
-    int h, m;
-    if (sscanf(hora, "%d:%d", &h, &m) != 2)
-        return 0;
-    if (h < 0 || h > 23 || m < 0 || m > 59)
-        return 0;
-    return 1;
-}
-
-int buscarPorPlaca(Vehiculo lista[], int n, char placa[]) {
-    for (int i = 0; i < n; i++) {
-        if (strcmp(lista[i].placa, placa) == 0) {
-            return i;
-        }
-    }
-    return -1;
+void generarNombreArchivo(char *nombreArchivo, size_t size) {
+    snprintf(nombreArchivo, size, "resumenes/resumen_dia.txt");
 }
 
 int convertirHoraAMinutos(const char *hora) {
@@ -84,252 +63,209 @@ float calcularPrecio(char *entrada, char *salida) {
     return precio;
 }
 
-void mostrarVehiculo(Vehiculo v) {
-    printf("\nPlaca: %s\n", v.placa);
-    printf("Marca: %s\n", v.marca);
-    printf("Color: %s\n", v.color);
-    printf("Hora de entrada: %s\n", v.horaEntrada);
-    if (strlen(v.horaSalida) > 0) {
-        printf("Hora de salida: %s\n", v.horaSalida);
-        printf("Precio pagado: $%.2f\n", v.precioPagado);
-    } else {
-        printf("Hora de salida: (Aun en parqueadero)\n");
+int validarPlaca(const char *placa) {
+    if (strlen(placa) != 7) return 0;
+    for (int i = 0; i < 3; i++) {
+        if (!isalpha(placa[i])) return 0;
     }
+    for (int i = 3; i < 7; i++) {
+        if (!isdigit(placa[i])) return 0;
+    }
+    return 1;
 }
 
-void registrarEntrada(Vehiculo parqueadero[], int *cantidad, int *puestosDisponibles) {
-    if (*puestosDisponibles <= 0) {
-        printf("Parqueadero lleno.\n");
+int esHoraValida(const char *hora) {
+    int h, m;
+    if (sscanf(hora, "%d:%d", &h, &m) != 2) return 0;
+    if (h < 0 || h > 23 || m < 0 || m > 59) return 0;
+    return 1;
+}
+
+void registrarIngreso(Vehiculo parqueadero[], int *cantidad) {
+    if (*cantidad >= MAX_VEHICULOS) {
+        printf("\nEl parqueadero esta lleno.\n");
         return;
     }
 
     Vehiculo nuevo;
-
-    // Placa
     do {
-        printf("Ingrese la placa del vehiculo: ");
-        fgets(nuevo.placa, 20, stdin);
-        nuevo.placa[strcspn(nuevo.placa, "\n")] = '\0';
-        convertirMayusculas(nuevo.placa);
-
+        printf("\nIngrese la placa (formato ABC1234): ");
+        scanf("%s", nuevo.placa);
         if (!validarPlaca(nuevo.placa)) {
-            printf("Error: La placa contiene caracteres invalidos.\n");
+            printf("Placa invalida. Debe tener 3 letras y 4 numeros.\n");
         }
     } while (!validarPlaca(nuevo.placa));
 
-    // Marca
-    do {
-        printf("Ingrese la marca del vehiculo: ");
-        fgets(nuevo.marca, 30, stdin);
-        nuevo.marca[strcspn(nuevo.marca, "\n")] = '\0';
+    printf("Ingrese la marca: ");
+    scanf("%s", nuevo.marca);
 
-        if (!validarTextoSoloLetras(nuevo.marca)) {
-            printf("Error: La marca solo debe contener letras.\n");
-        }
-    } while (!validarTextoSoloLetras(nuevo.marca));
+    printf("Ingrese el color: ");
+    scanf("%s", nuevo.color);
 
-    // Color
-    do {
-        printf("Ingrese el color del vehiculo: ");
-        fgets(nuevo.color, 20, stdin);
-        nuevo.color[strcspn(nuevo.color, "\n")] = '\0';
-
-        if (!validarTextoSoloLetras(nuevo.color)) {
-            printf("Error: El color solo debe contener letras.\n");
-        }
-    } while (!validarTextoSoloLetras(nuevo.color));
-
-    for (int i = 0; i < *cantidad; i++) {
-        if (strcmp(parqueadero[i].placa, nuevo.placa) == 0 && strlen(parqueadero[i].horaSalida) == 0) {
-            printf("El vehiculo ya esta registrado sin salida.\n");
-            return;
-        }
-    }
-
-    // Hora de entrada
-    do {
-        printf("Ingrese la hora de entrada (HH:MM): ");
-        fgets(nuevo.horaEntrada, 10, stdin);
-        nuevo.horaEntrada[strcspn(nuevo.horaEntrada, "\n")] = '\0';
-
-        if (!validarHora(nuevo.horaEntrada)) {
-            printf("Error: Formato de hora invalido. Use HH:MM.\n");
-        }
-    } while (!validarHora(nuevo.horaEntrada));
+    printf("Ingrese la hora de entrada (hh:mm): ");
+    scanf("%s", nuevo.horaEntrada);
 
     strcpy(nuevo.horaSalida, "");
     nuevo.precioPagado = 0.0;
 
     parqueadero[*cantidad] = nuevo;
     (*cantidad)++;
-    (*puestosDisponibles)--;
 
-    printf("Vehiculo registrado correctamente.\n");
+    printf("Vehiculo registrado exitosamente.\n");
 }
 
-void registrarSalida(Vehiculo parqueadero[], int *puestosDisponibles, int cantidad) {
-    char placa[20];
-    printf("Ingrese la placa: ");
-    fgets(placa, 20, stdin);
-    placa[strcspn(placa, "\n")] = '\0';
-    convertirMayusculas(placa);
+void registrarSalida(Vehiculo parqueadero[], int cantidad) {
+    char placa[10];
+    printf("\nIngrese la placa del vehiculo que va a salir: ");
+    scanf("%s", placa);
 
-    int pos = buscarPorPlaca(parqueadero, cantidad, placa);
-    if (pos == -1) {
-        printf("Vehiculo no encontrado.\n");
-        return;
-    }
+    for (int i = 0; i < cantidad; i++) {
+        if (strcmp(parqueadero[i].placa, placa) == 0 && parqueadero[i].precioPagado == 0.0) {
+            do {
+                printf("Ingrese la hora de salida (hh:mm): ");
+                scanf("%5s", parqueadero[i].horaSalida);
+                if (!esHoraValida(parqueadero[i].horaSalida)) {
+                    printf("Hora de salida invalida. Formato correcto HH:MM, rango 00:00 a 23:59.\n");
+                }
+            } while (!esHoraValida(parqueadero[i].horaSalida));
 
-    if (strlen(parqueadero[pos].horaSalida) != 0) {
-        printf("La salida ya fue registrada.\n");
-        return;
-    }
+            int minutosEntrada = convertirHoraAMinutos(parqueadero[i].horaEntrada);
+            int minutosSalida = convertirHoraAMinutos(parqueadero[i].horaSalida);
 
-    // Hora de salida
-    do {
-        printf("Ingrese la hora de salida (HH:MM): ");
-        fgets(parqueadero[pos].horaSalida, 10, stdin);
-        parqueadero[pos].horaSalida[strcspn(parqueadero[pos].horaSalida, "\n")] = '\0';
+            if (minutosSalida < minutosEntrada) {
+                printf("La hora de salida no puede ser anterior a la hora de entrada.\n");
+                strcpy(parqueadero[i].horaSalida, "");
+                return;
+            }
 
-        if (!validarHora(parqueadero[pos].horaSalida)) {
-            printf("Error: Formato de hora invalido. Use HH:MM.\n");
+            parqueadero[i].precioPagado = calcularPrecio(parqueadero[i].horaEntrada, parqueadero[i].horaSalida);
+            printf("Precio a pagar: $%.2f\n", parqueadero[i].precioPagado);
+            return;
         }
-    } while (!validarHora(parqueadero[pos].horaSalida));
+    }
+    printf("Vehiculo no encontrado o ya salio.\n");
+}
 
-    parqueadero[pos].precioPagado = calcularPrecio(parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
+void mostrarVehiculos(Vehiculo parqueadero[], int cantidad) {
+    printf("\n--- Lista de Vehículos ---\n");
+    for (int i = 0; i < cantidad; i++) {
+        printf("Placa: %s | Marca: %s | Color: %s | Entrada: %s | Salida: %s | Pagado: $%.2f\n",
+               parqueadero[i].placa,
+               parqueadero[i].marca,
+               parqueadero[i].color,
+               parqueadero[i].horaEntrada,
+               strcmp(parqueadero[i].horaSalida, "") == 0 ? "--:--" : parqueadero[i].horaSalida,
+               parqueadero[i].precioPagado);
+    }
+}
 
-    printf("Duracion: %s - %s\n", parqueadero[pos].horaEntrada, parqueadero[pos].horaSalida);
-    printf("Precio a pagar: $%.2f\n", parqueadero[pos].precioPagado);
+void buscarVehiculo(Vehiculo parqueadero[], int cantidad) {
+    char placa[10];
+    printf("\nIngrese la placa a buscar: ");
+    scanf("%s", placa);
 
-    (*puestosDisponibles)++;
+    for (int i = 0; i < cantidad; i++) {
+        if (strcmp(parqueadero[i].placa, placa) == 0) {
+            printf("Placa: %s | Marca: %s | Color: %s | Entrada: %s | Salida: %s | Pagado: $%.2f\n",
+                   parqueadero[i].placa,
+                   parqueadero[i].marca,
+                   parqueadero[i].color,
+                   parqueadero[i].horaEntrada,
+                   strcmp(parqueadero[i].horaSalida, "") == 0 ? "--:--" : parqueadero[i].horaSalida,
+                   parqueadero[i].precioPagado);
+            return;
+        }
+    }
+    printf("Vehiculo no encontrado.\n");
 }
 
 void modificarVehiculo(Vehiculo parqueadero[], int cantidad) {
-    char placa[20];
-    printf("Ingrese la placa del vehiculo a modificar: ");
-    fgets(placa, 20, stdin);
-    placa[strcspn(placa, "\n")] = '\0';
-    convertirMayusculas(placa);
+    char placa[10];
+    printf("\nIngrese la placa del vehiculo a modificar: ");
+    scanf("%s", placa);
 
-    int pos = buscarPorPlaca(parqueadero, cantidad, placa);
-    if (pos == -1) {
-        printf("Vehiculo no encontrado.\n");
-        return;
-    }
+    for (int i = 0; i < cantidad; i++) {
+        if (strcmp(parqueadero[i].placa, placa) == 0) {
+            printf("Ingrese la nueva marca: ");
+            scanf("%s", parqueadero[i].marca);
 
-    Vehiculo *v = &parqueadero[pos];
+            printf("Ingrese el nuevo color: ");
+            scanf("%s", parqueadero[i].color);
 
-    do {
-        printf("Nueva placa: ");
-        fgets(v->placa, 20, stdin);
-        v->placa[strcspn(v->placa, "\n")] = '\0';
-        convertirMayusculas(v->placa);
-
-        if (!validarPlaca(v->placa)) {
-            printf("Error: Placa invalida.\n");
-        }
-    } while (!validarPlaca(v->placa));
-
-    do {
-        printf("Nueva marca: ");
-        fgets(v->marca, 30, stdin);
-        v->marca[strcspn(v->marca, "\n")] = '\0';
-
-        if (!validarTextoSoloLetras(v->marca)) {
-            printf("Error: Marca invalida.\n");
-        }
-    } while (!validarTextoSoloLetras(v->marca));
-
-    do {
-        printf("Nuevo color: ");
-        fgets(v->color, 20, stdin);
-        v->color[strcspn(v->color, "\n")] = '\0';
-
-        if (!validarTextoSoloLetras(v->color)) {
-            printf("Error: Color invalido.\n");
-        }
-    } while (!validarTextoSoloLetras(v->color));
-
-    do {
-        printf("Nueva hora de entrada (HH:MM): ");
-        fgets(v->horaEntrada, 10, stdin);
-        v->horaEntrada[strcspn(v->horaEntrada, "\n")] = '\0';
-
-        if (!validarHora(v->horaEntrada)) {
-            printf("Error: Formato de hora de entrada invalido.\n");
-        }
-    } while (!validarHora(v->horaEntrada));
-
-    printf("Nueva hora de salida (HH:MM o vacio si no ha salido): ");
-    fgets(v->horaSalida, 10, stdin);
-    v->horaSalida[strcspn(v->horaSalida, "\n")] = '\0';
-
-    if (strlen(v->horaSalida) > 0) {
-        if (!validarHora(v->horaSalida)) {
-            printf("Error: Formato de hora de salida invalido.\n");
+            printf("Vehiculo modificado correctamente.\n");
             return;
         }
-        v->precioPagado = calcularPrecio(v->horaEntrada, v->horaSalida);
-        printf("Nuevo precio calculado: $%.2f\n", v->precioPagado);
-    } else {
-        v->precioPagado = 0.0;
     }
-
-    printf("Datos modificados correctamente.\n");
+    printf("Vehiculo no encontrado.\n");
 }
 
 void finalizarDia(Vehiculo parqueadero[], int cantidad) {
     float total = 0.0;
+    char nombreArchivo[100];
+
+    crearDirectorioResumenes();
+    generarNombreArchivo(nombreArchivo, sizeof(nombreArchivo));
+
+    FILE *archivo = fopen(nombreArchivo, "w");
+    if (archivo == NULL) {
+        printf("Error al crear el archivo de resumen.\n");
+        return;
+    }
+
+    fprintf(archivo, "--- RESUMEN DEL DIA ---\n");
     printf("\n--- Cierre del Dia ---\n");
 
     for (int i = 0; i < cantidad; i++) {
         if (parqueadero[i].precioPagado > 0) {
+            fprintf(archivo, "Placa: %s\n", parqueadero[i].placa);
+            fprintf(archivo, "Marca: %s\n", parqueadero[i].marca);
+            fprintf(archivo, "Color: %s\n", parqueadero[i].color);
+            fprintf(archivo, "Hora de entrada: %s\n", parqueadero[i].horaEntrada);
+            fprintf(archivo, "Hora de salida: %s\n", parqueadero[i].horaSalida);
+            fprintf(archivo, "Precio pagado: $%.2f\n", parqueadero[i].precioPagado);
+            fprintf(archivo, "-------------------------\n");
+
             printf("Placa: %s - Pago: $%.2f\n", parqueadero[i].placa, parqueadero[i].precioPagado);
             total += parqueadero[i].precioPagado;
         }
     }
 
+    fprintf(archivo,"TOTAL RECAUDADO: $%.2f\n", total);
+    fclose(archivo);
+
     printf("Total recaudado: $%.2f\n", total);
+    printf("Resumen guardado en: %s\n", nombreArchivo);
 }
 
 int main() {
-    Vehiculo parqueadero[100];
+    Vehiculo parqueadero[MAX_VEHICULOS];
     int cantidad = 0;
-    int puestosDisponibles = 60;
     int opcion;
 
-    while (1) {
-        printf("\n--- SISTEMA DE PARQUEADERO ---\n");
-        printf("Puestos disponibles: %d / 60\n", puestosDisponibles);
-        printf("1. Ingresar vehiculo\n");
-        printf("2. Registrar salida\n");
-        printf("3. Modificar datos vehiculo\n");
-        printf("4. Mostrar vehiculos\n");
-        printf("5. Finalizar dia\n");
-        printf("6. Salir\n");
-        printf("Opcion: ");
+    do {
+        printf("\n--- MENU PARQUEADERO ---\n");
+        printf("1. Registrar ingreso de vehiculo\n");
+        printf("2. Registrar salida de vehiculo\n");
+        printf("3. Mostrar todos los vehiculos\n");
+        printf("4. Buscar vehiculo por placa\n");
+        printf("5. Modificar datos de vehiculo\n");
+        printf("6. Finalizar dia y mostrar resumen\n");
+        printf("7. Salir\n");
+        printf("Seleccione una opcion: ");
         scanf("%d", &opcion);
-        getchar(); // limpiar buffer
 
-        if (opcion == 1) {
-            registrarEntrada(parqueadero, &cantidad, &puestosDisponibles);
-        } else if (opcion == 2) {
-            registrarSalida(parqueadero, &puestosDisponibles, cantidad);
-        } else if (opcion == 3) {
-            modificarVehiculo(parqueadero, cantidad);
-        } else if (opcion == 4) {
-            for (int i = 0; i < cantidad; i++) {
-                mostrarVehiculo(parqueadero[i]);
-            }
-        } else if (opcion == 5) {
-            finalizarDia(parqueadero, cantidad);
-        } else if (opcion == 6) {
-            printf("Saliendo del sistema...\n");
-            break;
-        } else {
-            printf("Opcion invalida.\n");
+        switch (opcion) {
+            case 1: registrarIngreso(parqueadero, &cantidad); break;
+            case 2: registrarSalida(parqueadero, cantidad); break;
+            case 3: mostrarVehiculos(parqueadero, cantidad); break;
+            case 4: buscarVehiculo(parqueadero, cantidad); break;
+            case 5: modificarVehiculo(parqueadero, cantidad); break;
+            case 6: finalizarDia(parqueadero, cantidad); break;
+            case 7: printf("👋 Saliendo del sistema...\n"); break;
+            default: printf("Opcion invalida. Intente de nuevo.\n");
         }
-    }
+
+    } while (opcion != 7);
 
     return 0;
 }
