@@ -10,7 +10,6 @@ INTEGRANTES: JORDY CEVALLOS, ANA ULLOA, BRYAN MIGUITAMA
 #include <ctype.h>
 #include <time.h>
 
-// Inclusión condicional para crear carpetas
 #ifdef _WIN32
     #include <direct.h>
     #define mkdir(path, mode) _mkdir(path)
@@ -30,12 +29,15 @@ typedef struct {
     float precioPagado;
 } Vehiculo;
 
-void crearDirectorioResumenes() {
-    mkdir("resumenes", 0777); // Crea carpeta (Windows usa _mkdir por define)
+// Función para convertir cadena a mayúsculas
+void convertirAMayusculas(char *cadena) {
+    for (int i = 0; cadena[i]; i++) {
+        cadena[i] = toupper((unsigned char)cadena[i]);
+    }
 }
 
-void generarNombreArchivo(char *nombreArchivo, size_t size) {
-    snprintf(nombreArchivo, size, "resumenes/resumen_dia.txt");
+void crearDirectorioResumenes() {
+    mkdir("resumenes", 0777); // Crear carpeta si no existe
 }
 
 int convertirHoraAMinutos(const char *hora) {
@@ -91,6 +93,7 @@ void registrarIngreso(Vehiculo parqueadero[], int *cantidad) {
     do {
         printf("\nIngrese la placa (formato ABC1234): ");
         scanf("%s", nuevo.placa);
+        convertirAMayusculas(nuevo.placa);
         if (!validarPlaca(nuevo.placa)) {
             printf("Placa invalida. Debe tener 3 letras y 4 numeros.\n");
         }
@@ -102,8 +105,13 @@ void registrarIngreso(Vehiculo parqueadero[], int *cantidad) {
     printf("Ingrese el color: ");
     scanf("%s", nuevo.color);
 
-    printf("Ingrese la hora de entrada (hh:mm): ");
-    scanf("%s", nuevo.horaEntrada);
+    do {
+        printf("Ingrese la hora de entrada (hh:mm): ");
+        scanf("%5s", nuevo.horaEntrada);
+        if (!esHoraValida(nuevo.horaEntrada)) {
+            printf("Hora de entrada invalida. Formato correcto HH:MM, rango 00:00 a 23:59.\n");
+        }
+    } while (!esHoraValida(nuevo.horaEntrada));
 
     strcpy(nuevo.horaSalida, "");
     nuevo.precioPagado = 0.0;
@@ -118,6 +126,7 @@ void registrarSalida(Vehiculo parqueadero[], int cantidad) {
     char placa[10];
     printf("\nIngrese la placa del vehiculo que va a salir: ");
     scanf("%s", placa);
+    convertirAMayusculas(placa);
 
     for (int i = 0; i < cantidad; i++) {
         if (strcmp(parqueadero[i].placa, placa) == 0 && parqueadero[i].precioPagado == 0.0) {
@@ -163,6 +172,7 @@ void buscarVehiculo(Vehiculo parqueadero[], int cantidad) {
     char placa[10];
     printf("\nIngrese la placa a buscar: ");
     scanf("%s", placa);
+    convertirAMayusculas(placa);
 
     for (int i = 0; i < cantidad; i++) {
         if (strcmp(parqueadero[i].placa, placa) == 0) {
@@ -183,6 +193,7 @@ void modificarVehiculo(Vehiculo parqueadero[], int cantidad) {
     char placa[10];
     printf("\nIngrese la placa del vehiculo a modificar: ");
     scanf("%s", placa);
+    convertirAMayusculas(placa);
 
     for (int i = 0; i < cantidad; i++) {
         if (strcmp(parqueadero[i].placa, placa) == 0) {
@@ -201,12 +212,10 @@ void modificarVehiculo(Vehiculo parqueadero[], int cantidad) {
 
 void finalizarDia(Vehiculo parqueadero[], int cantidad) {
     float total = 0.0;
-    char nombreArchivo[100];
 
     crearDirectorioResumenes();
-    generarNombreArchivo(nombreArchivo, sizeof(nombreArchivo));
 
-    FILE *archivo = fopen(nombreArchivo, "w");
+    FILE *archivo = fopen("resumenes/resumen_dia.txt", "w");
     if (archivo == NULL) {
         printf("Error al crear el archivo de resumen.\n");
         return;
@@ -234,7 +243,12 @@ void finalizarDia(Vehiculo parqueadero[], int cantidad) {
     fclose(archivo);
 
     printf("Total recaudado: $%.2f\n", total);
-    printf("Resumen guardado en: %s\n", nombreArchivo);
+    printf("Resumen guardado en: resumenes/resumen_dia.txt\n");
+
+    // Abrir el archivo en Bloc de notas automáticamente (solo Windows)
+#ifdef _WIN32
+    system("start notepad.exe resumenes\\resumen_dia.txt");
+#endif
 }
 
 int main() {
@@ -261,7 +275,7 @@ int main() {
             case 4: buscarVehiculo(parqueadero, cantidad); break;
             case 5: modificarVehiculo(parqueadero, cantidad); break;
             case 6: finalizarDia(parqueadero, cantidad); break;
-            case 7: printf("👋 Saliendo del sistema...\n"); break;
+            case 7: printf("Saliendo del sistema...\n"); break;
             default: printf("Opcion invalida. Intente de nuevo.\n");
         }
 
